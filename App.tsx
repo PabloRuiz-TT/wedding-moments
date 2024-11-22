@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import { PaperProvider } from "react-native-paper";
-import { RootStack } from "./src/ui/routes/RootStack";
+import { RootNavigator } from "./src/navigation/RootNavigator";
 
 export default function App() {
   return (
@@ -11,7 +11,7 @@ export default function App() {
     >
       <PaperProvider>
         <NavigationContainer>
-          <RootStack />
+          <RootNavigator />
         </NavigationContainer>
       </PaperProvider>
     </KeyboardAvoidingView>
