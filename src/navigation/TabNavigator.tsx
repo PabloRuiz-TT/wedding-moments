@@ -53,7 +53,6 @@ export const TabNavigator = () => {
       onIndexChange={setIndex}
       renderScene={renderScene}
       getLabelText={({ route }) => route.title}
-      compact
     />
   );
 };
