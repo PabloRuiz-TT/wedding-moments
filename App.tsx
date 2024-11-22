@@ -1,11 +1,9 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import { PaperProvider } from "react-native-paper";
-import { RootStack } from "./src/routes/RootStack";
+import { RootStack } from "./src/ui/routes/RootStack";
 
 export default function App() {
-  const [active, setActive] = useState("");
   return (
     <KeyboardAvoidingView
       style={styles.keyboardAvoidingView}

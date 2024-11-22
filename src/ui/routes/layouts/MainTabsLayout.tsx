@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { BottomNavigation, Text } from "react-native-paper";
 import { BaseRoute } from "react-native-paper/lib/typescript/components/BottomNavigation/BottomNavigation";
+import { HomeScreen } from "../../screens/ui/main/home/HomeScreen";
+import { ItinerarioScreen } from "../../screens/ui/main/itinerario/ItinerarioScreen";
+import { RegalosScreen } from "../../screens/ui/main/regalos/RegalosScreen";
+import { AlbumScreen } from "../../screens/ui/main/album/AlbumScreen";
 
 export const MainTabsLayout = () => {
   const [index, setIndex] = useState(0);
@@ -35,10 +39,10 @@ export const MainTabsLayout = () => {
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    home: () => <Text>Hola</Text>,
-    itinerario: () => <Text>Hola</Text>,
-    regalos: () => <Text>Hola</Text>,
-    photos: () => <Text>Hola</Text>,
+    home: () => <HomeScreen />,
+    itinerario: () => <ItinerarioScreen />,
+    regalos: () => <RegalosScreen />,
+    photos: () => <AlbumScreen />,
   });
 
   return (
@@ -46,7 +50,6 @@ export const MainTabsLayout = () => {
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
-      barStyle={{ backgroundColor: "#fff" }}
     />
   );
 };
