@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { BottomNavigation, Icon, Text } from "react-native-paper";
 import { useTheme } from "react-native-paper";
-import { HomeScreen } from "../ui/screens/ui/main/home/HomeScreen";
-import { ItinerarioScreen } from "../ui/screens/ui/main/itinerario/ItinerarioScreen";
-import { RegalosScreen } from "../ui/screens/ui/main/regalos/RegalosScreen";
+import { HomeScreen } from "../screens/ui/main/home/HomeScreen";
+import { ItinerarioScreen } from "../screens/ui/main/itinerario/ItinerarioScreen";
+import { RegalosScreen } from "../screens/ui/main/regalos/RegalosScreen";
 import { BaseRoute } from "react-native-paper/lib/typescript/components/BottomNavigation/BottomNavigation";
-import { AlbumScreen } from "../ui/screens/ui/main/album/AlbumScreen";
+import { AlbumScreen } from "../screens/ui/main/album/AlbumScreen";
 import { TabsParamList } from "../types/navigation.types";
 
 export const TABS_ROUTES: BaseRoute[] = [

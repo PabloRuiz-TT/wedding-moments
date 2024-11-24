@@ -3,6 +3,7 @@ import { NavigatorScreenParams } from "@react-navigation/native";
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
+  Boarding: undefined;
 };
 
 export type TabsParamList = {
@@ -33,6 +34,7 @@ export const ROUTES = {
   AUTH: {
     LOGIN: "Login",
     REGISTER: "Register",
+    BOARDING: "Boarding",
   },
   DRAWER: {
     TABS: "Tabs",

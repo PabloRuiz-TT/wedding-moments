@@ -1,20 +1,26 @@
 import { RootStackParamList, ROUTES } from "../types/navigation.types";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DrawerNavigator } from "./DrawerNavigator";
+import { AuthNavigator } from "./AuthNavigator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Main"
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen
+      {/* <Stack.Screen
         name={ROUTES.ROOT.MAIN}
         component={DrawerNavigator}
+        options={{ headerShown: false }}
+      /> */}
+
+      <Stack.Screen
+        name={ROUTES.ROOT.AUTH}
+        component={AuthNavigator}
         options={{ headerShown: false }}
       />
 
