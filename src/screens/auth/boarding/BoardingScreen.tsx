@@ -89,7 +89,7 @@ export const BoardingScreen = ({ navigation }: BoardingScreenProps) => {
                     onPress={() => {
                       navigation.reset({
                         index: 0,
-                        routes: [{ name: "Login" }],
+                        routes: [{ name: "AuthOptionsAccess" }],
                       });
                     }}
                     rippleColor="rgba(0, 0, 0, .16)"

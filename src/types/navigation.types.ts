@@ -4,6 +4,7 @@ export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   Boarding: undefined;
+  AuthOptionsAccess: undefined;
 };
 
 export type TabsParamList = {
@@ -35,6 +36,7 @@ export const ROUTES = {
     LOGIN: "Login",
     REGISTER: "Register",
     BOARDING: "Boarding",
+    OPTIONS_ACCESS: "AuthOptionsAccess",
   },
   DRAWER: {
     TABS: "Tabs",
