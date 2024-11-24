@@ -9,8 +9,14 @@ import "react-native-gesture-handler";
 import { Button } from "react-native-paper";
 import "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthStackParamList } from "../../../types/navigation.types";
+import { NavigationProp } from "@react-navigation/native";
 
-export const AuthOptionsScreen = () => {
+type AuthOptionsScreenProps = {
+  navigation: NavigationProp<AuthStackParamList, "AuthOptionsAccess">;
+};
+
+export const AuthOptionsScreen = ({ navigation }: AuthOptionsScreenProps) => {
   let [fontsLoaded] = useFonts({
     Italiana_400Regular,
     Raleway_300Light,
@@ -90,8 +96,18 @@ export const AuthOptionsScreen = () => {
                 padding: 12,
               }}
             >
-              <Button mode="contained">Iniciar Sesion</Button>
-              <Button mode="contained-tonal">Crear una cuenta</Button>
+              <Button
+                mode="contained"
+                onPress={() => navigation.navigate("Login")}
+              >
+                Iniciar Sesion
+              </Button>
+              <Button
+                onPress={() => navigation.navigate("Register")}
+                mode="contained-tonal"
+              >
+                Crear una cuenta
+              </Button>
               <Button mode="text" textColor="white">
                 Omitir
               </Button>

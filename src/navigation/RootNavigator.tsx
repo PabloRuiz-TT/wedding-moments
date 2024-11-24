@@ -23,10 +23,6 @@ export const RootNavigator = () => {
         component={AuthNavigator}
         options={{ headerShown: false }}
       />
-
-      <Stack.Group>
-        <Stack.Screen name={ROUTES.ROOT.MODAL} component={() => null} />
-      </Stack.Group>
     </Stack.Navigator>
   );
 };

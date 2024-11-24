@@ -1,8 +1,9 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthStackParamList, ROUTES } from "../types/navigation.types";
-import { Text } from "react-native-paper";
 import { BoardingScreen } from "../screens/auth/boarding/BoardingScreen";
 import { AuthOptionsScreen } from "../screens/auth/boarding/AuthOptionsScreen";
+import LoginScreen from "../screens/auth/login/LoginScreen";
+import RegisterScreen from "../screens/auth/register/RegisterScreen";
 
 const Auth = createNativeStackNavigator<AuthStackParamList>();
 
@@ -20,10 +21,15 @@ export const AuthNavigator = () => {
         component={AuthOptionsScreen}
       />
 
-      <Auth.Screen
-        name={ROUTES.AUTH.REGISTER}
-        component={() => <Text>Register</Text>}
-      />
+      <Auth.Group
+        screenOptions={{
+          presentation: "modal",
+          contentStyle: { backgroundColor: "white", padding: 20 },
+        }}
+      >
+        <Auth.Screen name="Login" component={LoginScreen} />
+        <Auth.Screen name="Register" component={RegisterScreen} />
+      </Auth.Group>
     </Auth.Navigator>
   );
 };
