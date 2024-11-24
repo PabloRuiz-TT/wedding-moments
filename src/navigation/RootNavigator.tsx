@@ -12,15 +12,15 @@ export const RootNavigator = () => {
         headerShown: false,
       }}
     >
-      {/* <Stack.Screen
-        name={ROUTES.ROOT.MAIN}
-        component={DrawerNavigator}
-        options={{ headerShown: false }}
-      /> */}
-
       <Stack.Screen
         name={ROUTES.ROOT.AUTH}
         component={AuthNavigator}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name={ROUTES.ROOT.MAIN}
+        component={DrawerNavigator}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

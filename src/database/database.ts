@@ -23,6 +23,7 @@ export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
           Nombre TEXT NOT NULL,
           Correo TEXT UNIQUE NOT NULL,
           Password TEXT NOT NULL,
+          TELEFONO TEXT NOT NULL,
           Rol TEXT NOT NULL,
           FechaRegistro TEXT DEFAULT CURRENT_TIMESTAMP
         );

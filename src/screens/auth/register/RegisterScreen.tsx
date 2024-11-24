@@ -1,181 +1,199 @@
-import React from "react";
+import { Raleway_400Regular, useFonts } from "@expo-google-fonts/raleway";
+import { MotiView } from "moti";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, ScrollView, View } from "react-native";
 import { HelperText, IconButton, Text, TextInput } from "react-native-paper";
-import { Raleway_400Regular, useFonts } from "@expo-google-fonts/raleway";
-import { MotiView } from "moti";
-const defaultValues = {
-  nombre: "",
-  email: "",
-  password: "",
-  telefono: "",
+import { SafeAreaView } from "react-native-safe-area-context";
+import { authService, RegisterDTO } from "../../../services/auth";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { ROUTES } from "../../../types/navigation.types";
+
+interface RegisterFormData {
+  nombre: string;
+  email: string;
+  password: string;
+  telefono: string;
+}
+
+const DEFAULT_VALUES: RegisterFormData = {
+  nombre: "Pablo Yair",
+  email: "pablo@email.com",
+  password: "admin123",
+  telefono: "998103588",
+};
+
+interface FormFieldProps {
+  name: keyof RegisterFormData;
+  control: any;
+  label: string;
+  icon: string;
+  inputMode?: "text" | "numeric" | "email";
+  isPassword?: boolean;
+}
+
+const FormField = ({
+  name,
+  control,
+  label,
+  icon,
+  inputMode = "text",
+  isPassword = false,
+}: FormFieldProps) => {
+  const [showPassword, setShowPassword] = useState(!isPassword);
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      rules={{ required: true }}
+      render={({ field, fieldState: { error } }) => (
+        <>
+          <TextInput
+            value={field.value}
+            onChangeText={field.onChange}
+            label={label}
+            inputMode={inputMode}
+            style={{ backgroundColor: "white" }}
+            left={<TextInput.Icon icon={icon} />}
+            secureTextEntry={isPassword && !showPassword}
+            right={
+              isPassword && (
+                <TextInput.Icon
+                  icon={showPassword ? "eye-off" : "eye"}
+                  onPress={() => setShowPassword(!showPassword)}
+                />
+              )
+            }
+          />
+          {error && (
+            <HelperText padding="none" type="error" visible={true}>
+              {label} es requerido
+            </HelperText>
+          )}
+        </>
+      )}
+    />
+  );
 };
 
 const RegisterScreen = () => {
+  const navigation = useNavigation<NavigationProp<any>>();
+
   const {
     control,
     handleSubmit,
     formState: { isDirty, isValid },
-  } = useForm({ defaultValues });
+  } = useForm<RegisterFormData>({
+    defaultValues: DEFAULT_VALUES,
+    mode: "onChange",
+  });
 
-  let [fontsLoaded] = useFonts({
+  let [] = useFonts({
     Raleway_400Regular,
   });
 
-  const onSubmit = handleSubmit((data) => {
-    Alert.alert("Datos del formulario", JSON.stringify(data));
-  });
+  const handleRegister = async (data: RegisterFormData) => {
+    const { nombre, telefono, email, password } = data;
+
+    try {
+      const dto: RegisterDTO = {
+        nombre,
+        telefono,
+        correo: email,
+        password,
+      };
+
+      const result = await authService.register(dto);
+
+      if (result === null) {
+        Alert.alert(
+          "Correo duplicado",
+          "El correo electrónico ya se encuentra registrado, intenta con otro"
+        );
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: ROUTES.ROOT.MAIN }],
+        });
+      }
+    } catch (error) {
+      Alert.alert("Error", "Ocurrió un error al intentar registrar el usuario");
+    }
+  };
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <Text
-        variant="headlineLarge"
-        style={{
-          fontFamily: "Raleway_400Regular",
-        }}
-      >
-        Bienvenido, registra tus datos para continuar
-      </Text>
-
-      <View style={{ marginTop: 36, gap: 24 }}>
-        <Controller
-          name="nombre"
-          control={control}
-          rules={{ required: true }}
-          render={({ field, fieldState: { error } }) => (
-            <>
-              <TextInput
-                value={field.value}
-                onChangeText={field.onChange}
-                label="Nombre completo"
-                inputMode="text"
-                style={{
-                  backgroundColor: "white",
-                }}
-                left={<TextInput.Icon icon="badge-account-outline" />}
-              />
-              {error && (
-                <HelperText padding="none" type="error" visible={true}>
-                  El nombre es requerido
-                </HelperText>
-              )}
-            </>
-          )}
-        />
-
-        <Controller
-          name="telefono"
-          control={control}
-          rules={{ required: true }}
-          render={({ field, fieldState: { error } }) => (
-            <>
-              <TextInput
-                value={field.value}
-                onChangeText={field.onChange}
-                label="Telefono"
-                inputMode="tel"
-                style={{
-                  backgroundColor: "white",
-                }}
-                left={<TextInput.Icon icon="badge-account-outline" />}
-              />
-              {error && (
-                <HelperText padding="none" type="error" visible={true}>
-                  El telefono es requerido
-                </HelperText>
-              )}
-            </>
-          )}
-        />
-
-        <Controller
-          name="email"
-          control={control}
-          rules={{ required: true }}
-          render={({ field, fieldState: { error } }) => (
-            <>
-              <TextInput
-                value={field.value}
-                onChangeText={field.onChange}
-                label="Correo electronico"
-                placeholder="user@email.com"
-                inputMode="email"
-                style={{
-                  backgroundColor: "white",
-                }}
-                left={<TextInput.Icon icon="email-outline" />}
-              />
-              {error && (
-                <HelperText padding="none" type="error" visible={true}>
-                  El correo electronico es requerido
-                </HelperText>
-              )}
-            </>
-          )}
-        />
-
-        <Controller
-          name="password"
-          control={control}
-          rules={{ required: true }}
-          render={({ field, fieldState: { error } }) => (
-            <>
-              <TextInput
-                value={field.value}
-                onChangeText={field.onChange}
-                label="Contraseña"
-                placeholder="********"
-                secureTextEntry={false}
-                style={{
-                  backgroundColor: "white",
-                }}
-                left={<TextInput.Icon icon="lock-outline" />}
-                right={
-                  <TextInput.Icon
-                    icon={false ? "eye-off" : "eye"}
-                    onPress={() => {}}
-                  />
-                }
-              />
-
-              {error && (
-                <HelperText type="error" visible={true}>
-                  La contraseña es requerida
-                </HelperText>
-              )}
-            </>
-          )}
-        />
-
-        <MotiView
-          from={{ opacity: 0, translateY: 50 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          transition={{ type: "timing", duration: 1000, delay: 0 }}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 15,
-            marginTop: 20,
-          }}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
+        <Text
+          variant="headlineLarge"
+          style={{ fontFamily: "Raleway_400Regular" }}
         >
-          <IconButton
-            icon="arrow-right"
-            mode="contained"
-            disabled={!isDirty || !isValid}
-            onPress={onSubmit}
+          Bienvenido, registra tus datos para continuar
+        </Text>
+
+        <View style={{ marginTop: 36, gap: 24 }}>
+          <FormField
+            name="nombre"
+            control={control}
+            label="Nombre completo"
+            icon="badge-account-outline"
           />
-          <Text
+
+          <FormField
+            name="telefono"
+            control={control}
+            label="Teléfono"
+            icon="phone-outline"
+            inputMode="numeric"
+          />
+
+          <FormField
+            name="email"
+            control={control}
+            label="Correo electrónico"
+            icon="email-outline"
+            inputMode="email"
+          />
+
+          <FormField
+            name="password"
+            control={control}
+            label="Contraseña"
+            icon="lock-outline"
+            isPassword
+          />
+
+          <MotiView
+            from={{ opacity: 0, translateY: 50 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: "timing", duration: 1000 }}
             style={{
-              fontSize: 18,
-              fontWeight: "600",
-              opacity: 0.9,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 15,
+              marginTop: 20,
             }}
           >
-            Iniciar sesión
-          </Text>
-        </MotiView>
-      </View>
-    </ScrollView>
+            <IconButton
+              icon="arrow-right"
+              mode="contained"
+              disabled={!isDirty || !isValid}
+              onPress={handleSubmit(handleRegister)}
+            />
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "600",
+                opacity: 0.9,
+              }}
+            >
+              Registrarme
+            </Text>
+          </MotiView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
