@@ -29,7 +29,7 @@ export const BoardingScreen = ({ navigation }: BoardingScreenProps) => {
       indexImg < sources.length - 1
         ? setIndexImg(indexImg + 1)
         : setIndexImg(0);
-    }, 8000);
+    }, 3000);
 
     return () => clearInterval(intervalId);
   }, [indexImg]);
