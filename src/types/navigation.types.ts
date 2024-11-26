@@ -7,6 +7,13 @@ export type AuthStackParamList = {
   AuthOptionsAccess: undefined;
 };
 
+export type ProfileStackParamList = {
+  Profile: undefined;
+  ProfileEdit: undefined;
+  ProfileInfo: undefined;
+  ProfileQuestions: undefined;
+};
+
 export type TabsParamList = {
   home: undefined;
   itinerario: undefined;
@@ -16,15 +23,19 @@ export type TabsParamList = {
 
 export type DrawerParamList = {
   Tabs: NavigatorScreenParams<TabsParamList>;
-  Perfil: undefined;
   Invitados: undefined;
   Eventos: undefined;
   QRCode: undefined;
+  Profile: undefined;
+  ProfileEdit: undefined;
+  ProfileInfo: undefined;
+  ProfileQuestions: undefined;
 };
 
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
   Main: NavigatorScreenParams<DrawerParamList>;
+  Profile: NavigatorScreenParams<ProfileStackParamList>;
   Modal?: {
     type: "success" | "error" | "warning";
     message: string;
@@ -40,7 +51,7 @@ export const ROUTES = {
   },
   DRAWER: {
     TABS: "Tabs",
-    PROFILE: "Perfil",
+    PROFILE: "Profile",
     GUESTS: "Invitados",
     QRCODE: "QRCode",
     EVENTS: "Eventos",

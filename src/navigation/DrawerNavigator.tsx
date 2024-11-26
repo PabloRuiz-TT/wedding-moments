@@ -2,16 +2,30 @@ import {
   createDrawerNavigator,
   DrawerNavigationOptions,
 } from "@react-navigation/drawer";
-import { DrawerParamList, ROUTES } from "../types/navigation.types";
+import {
+  DrawerParamList,
+  ProfileStackParamList,
+  ROUTES,
+} from "../types/navigation.types";
 import { TabNavigator } from "./TabNavigator";
-import { Icon, useTheme } from "react-native-paper";
+import { Icon, IconButton, useTheme } from "react-native-paper";
 import { useMemo } from "react";
+import ProfileScreen from "../screens/profile/Profile";
+import ProfileEditScreen from "../screens/profile/ProfileEdit";
+import ProfileInfoScreen from "../screens/profile/ProfileInfo";
+import ProfileQuestionsScreen from "../screens/profile/ProfileQuestions";
+import { NavigationProp } from "@react-navigation/native";
+import { Alert } from "react-native";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 const ICON_SIZE = 20;
 
-export const DrawerNavigator = () => {
+type DrawerNavigatorProps = {
+  navigation: NavigationProp<ProfileStackParamList, "Profile">;
+};
+
+export const DrawerNavigator = ({ navigation }: DrawerNavigatorProps) => {
   const { colors } = useTheme();
 
   const screenOptions = useMemo<DrawerNavigationOptions>(
@@ -38,18 +52,20 @@ export const DrawerNavigator = () => {
         component={TabNavigator}
         options={{
           drawerIcon: () => <Icon source="home" size={ICON_SIZE} />,
+          headerRight: () => (
+            <IconButton
+              icon="account"
+              size={20}
+              iconColor="black"
+              onPress={() => {
+                navigation.navigate("Profile");
+              }}
+            />
+          ),
           title: "Inicio",
         }}
       />
-      <Drawer.Screen
-        name={ROUTES.DRAWER.PROFILE}
-        component={() => null}
-        options={{
-          title: "Perfil",
-          drawerIcon: () => <Icon source="account" size={ICON_SIZE} />,
-          headerRight: () => <Icon source="cog" size={ICON_SIZE} />,
-        }}
-      />
+
       <Drawer.Screen
         name={ROUTES.DRAWER.GUESTS}
         component={() => null}
