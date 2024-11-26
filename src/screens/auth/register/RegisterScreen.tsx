@@ -1,126 +1,74 @@
-import { Raleway_400Regular, useFonts } from "@expo-google-fonts/raleway";
-import { MotiView } from "moti";
-import React, { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
-import { HelperText, IconButton, Text, TextInput } from "react-native-paper";
+import { Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { authService, RegisterDTO } from "../../../services/auth";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { ROUTES } from "../../../types/navigation.types";
+import { SubmitComponent } from "../components/SubmitComponent";
+import { useAuth } from "../../../contexts/auth/AuthContext";
+import { getFirebaseAuthError } from "../../../database/firebase";
+import { PersonaService } from "../../../services/persona";
 
-interface RegisterFormData {
-  nombre: string;
+type User = {
   email: string;
   password: string;
+  nombre: string;
   telefono: string;
-}
-
-const DEFAULT_VALUES: RegisterFormData = {
-  nombre: "Pablo Yair",
-  email: "pablo@email.com",
-  password: "admin123",
-  telefono: "998103588",
-};
-
-interface FormFieldProps {
-  name: keyof RegisterFormData;
-  control: any;
-  label: string;
-  icon: string;
-  inputMode?: "text" | "numeric" | "email";
-  isPassword?: boolean;
-}
-
-const FormField = ({
-  name,
-  control,
-  label,
-  icon,
-  inputMode = "text",
-  isPassword = false,
-}: FormFieldProps) => {
-  const [showPassword, setShowPassword] = useState(!isPassword);
-
-  return (
-    <Controller
-      name={name}
-      control={control}
-      rules={{ required: true }}
-      render={({ field, fieldState: { error } }) => (
-        <>
-          <TextInput
-            value={field.value}
-            onChangeText={field.onChange}
-            label={label}
-            inputMode={inputMode}
-            style={{ backgroundColor: "white" }}
-            left={<TextInput.Icon icon={icon} />}
-            secureTextEntry={isPassword && !showPassword}
-            right={
-              isPassword && (
-                <TextInput.Icon
-                  icon={showPassword ? "eye-off" : "eye"}
-                  onPress={() => setShowPassword(!showPassword)}
-                />
-              )
-            }
-          />
-          {error && (
-            <HelperText padding="none" type="error" visible={true}>
-              {label} es requerido
-            </HelperText>
-          )}
-        </>
-      )}
-    />
-  );
 };
 
 const RegisterScreen = () => {
-  const navigation = useNavigation<NavigationProp<any>>();
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [submitEnabled, setSubmitEnabled] = useState<boolean>(false);
 
-  const {
-    control,
-    handleSubmit,
-    formState: { isDirty, isValid },
-  } = useForm<RegisterFormData>({
-    defaultValues: DEFAULT_VALUES,
-    mode: "onChange",
+  const [user, setUser] = useState<User>({
+    email: "",
+    password: "",
+    nombre: "",
+    telefono: "",
   });
 
-  let [] = useFonts({
-    Raleway_400Regular,
-  });
+  const { signUp }: any = useAuth();
 
-  const handleRegister = async (data: RegisterFormData) => {
-    const { nombre, telefono, email, password } = data;
+  const handleSignUp = async () => {
+    setLoading(true);
+    const personaService = PersonaService.getInstance();
 
     try {
-      const dto: RegisterDTO = {
-        nombre,
-        telefono,
-        correo: email,
-        password,
-      };
+      const response = await personaService.createPersona(
+        user.nombre,
+        user.email,
+        user.password,
+        user.telefono,
+        "Admin"
+      );
 
-      const result = await authService.register(dto);
-
-      if (result === null) {
-        Alert.alert(
-          "Correo duplicado",
-          "El correo electrónico ya se encuentra registrado, intenta con otro"
-        );
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: ROUTES.ROOT.MAIN }],
-        });
+      if (response > 1) {
+        try {
+          await signUp(user.email, user.password);
+        } catch (error: any) {
+          const msgError = getFirebaseAuthError(error.code);
+          Alert.alert("Error", msgError);
+        }
       }
     } catch (error) {
-      Alert.alert("Error", "Ocurrió un error al intentar registrar el usuario");
+      console.error("Error registrando usuario:", error);
+      Alert.alert("Error", "No se pudo registrar el usuario");
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (
+      user.nombre.length > 0 &&
+      user.email.length > 0 &&
+      user.password.length > 0 &&
+      user.telefono.length > 0
+    ) {
+      setSubmitEnabled(true);
+    } else {
+      setSubmitEnabled(false);
+    }
+  }, [user]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -132,66 +80,60 @@ const RegisterScreen = () => {
           Bienvenido, registra tus datos para continuar
         </Text>
 
-        <View style={{ marginTop: 36, gap: 24 }}>
-          <FormField
-            name="nombre"
-            control={control}
-            label="Nombre completo"
-            icon="badge-account-outline"
+        <View style={{ marginTop: 20, gap: 12 }}>
+          <TextInput
+            value={user?.nombre}
+            onChangeText={(nombre) => setUser({ ...user, nombre })}
+            mode="flat"
+            inputMode="text"
+            label="Nombre"
+            placeholder="Nombre"
+            style={{ backgroundColor: "white" }}
+            left={<TextInput.Icon icon="account-outline" />}
           />
 
-          <FormField
-            name="telefono"
-            control={control}
-            label="Teléfono"
-            icon="phone-outline"
-            inputMode="numeric"
-          />
-
-          <FormField
-            name="email"
-            control={control}
-            label="Correo electrónico"
-            icon="email-outline"
+          <TextInput
+            value={user?.email}
+            onChangeText={(email) => setUser({ ...user, email })}
+            mode="flat"
             inputMode="email"
+            label="Correo electrónico"
+            placeholder="usuario@email.com"
+            style={{ backgroundColor: "white" }}
+            left={<TextInput.Icon icon="email-outline" />}
           />
 
-          <FormField
-            name="password"
-            control={control}
+          <TextInput
+            value={user?.password}
+            onChangeText={(password) => setUser({ ...user, password })}
+            mode="flat"
+            inputMode="text"
+            secureTextEntry={hidePassword}
             label="Contraseña"
-            icon="lock-outline"
-            isPassword
+            placeholder="********"
+            style={{ backgroundColor: "white" }}
+            left={<TextInput.Icon icon="lock-outline" />}
           />
 
-          <MotiView
-            from={{ opacity: 0, translateY: 50 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "timing", duration: 1000 }}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 15,
-              marginTop: 20,
-            }}
-          >
-            <IconButton
-              icon="arrow-right"
-              mode="contained"
-              disabled={!isDirty || !isValid}
-              onPress={handleSubmit(handleRegister)}
-            />
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "600",
-                opacity: 0.9,
-              }}
-            >
-              Registrarme
-            </Text>
-          </MotiView>
+          <TextInput
+            value={user?.telefono}
+            onChangeText={(telefono) => setUser({ ...user, telefono })}
+            mode="flat"
+            inputMode="email"
+            label="Correo electrónico"
+            placeholder="usuario@email.com"
+            style={{ backgroundColor: "white" }}
+            left={<TextInput.Icon icon="phone-outline" />}
+          />
         </View>
+
+        <SubmitComponent
+          handleSignIn={handleSignUp}
+          loading={loading}
+          submitEnabled={submitEnabled}
+          mainText="Registrarse"
+          secondaryText="Registrando..."
+        />
       </ScrollView>
     </SafeAreaView>
   );

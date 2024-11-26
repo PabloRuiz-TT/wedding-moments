@@ -1,130 +1,102 @@
-import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
-import { HelperText, IconButton, Text, TextInput } from "react-native-paper";
-import { Raleway_400Regular, useFonts } from "@expo-google-fonts/raleway";
-import { MotiView } from "moti";
 import { SafeAreaView } from "react-native-safe-area-context";
-const defaultValues = {
-  email: "",
-  password: "",
+import { Text, TextInput, useTheme } from "react-native-paper";
+import { SubmitComponent } from "../components/SubmitComponent";
+import { useAuth } from "../../../contexts/auth/AuthContext";
+import { getFirebaseAuthError } from "../../../database/firebase";
+
+type User = {
+  email: string;
+  password: string;
 };
 
 const LoginScreen = () => {
-  const {
-    control,
-    handleSubmit,
-    formState: { isDirty, isValid },
-  } = useForm({ defaultValues });
+  const { colors } = useTheme();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [submitEnabled, setSubmitEnabled] = useState<boolean>(false);
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
 
-  let [fontsLoaded] = useFonts({
-    Raleway_400Regular,
+  const { signIn }: any = useAuth();
+
+  const [user, setUser] = useState<User>({
+    email: "",
+    password: "",
   });
 
-  const onSubmit = handleSubmit((data) => {
-    Alert.alert("Datos del formulario", JSON.stringify(data));
-  });
+  const handleSignIn = async () => {
+    setLoading(true);
+
+    try {
+      await signIn(user.email, user.password);
+    } catch (error: any) {
+      const msgError = getFirebaseAuthError(error.code);
+      Alert.alert("Error", msgError);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user.email.length > 0 && user.password.length > 0) {
+      setSubmitEnabled(true);
+    } else {
+      setSubmitEnabled(false);
+    }
+  }, [user]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
-        <Text
-          variant="headlineLarge"
-          style={{
-            fontFamily: "Raleway_400Regular",
-          }}
-        >
-          Bienvenido de nuevo, inicia sesión para continuar
+        <Text style={{ fontSize: 32, opacity: 0.9, marginTop: 12 }}>
+          Bienvenido, ingresa tus datos para continuar
         </Text>
 
-        <View style={{ marginTop: 36, gap: 24 }}>
-          <Controller
-            name="email"
-            control={control}
-            rules={{ required: true }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <TextInput
-                  value={field.value}
-                  onChangeText={field.onChange}
-                  label="Correo electronico"
-                  placeholder="user@email.com"
-                  inputMode="email"
-                  style={{
-                    backgroundColor: "white",
-                  }}
-                  left={<TextInput.Icon icon="email-outline" />}
-                />
-                {error && (
-                  <HelperText padding="none" type="error" visible={true}>
-                    El correo electronico es requerido
-                  </HelperText>
-                )}
-              </>
-            )}
+        <Text style={{ marginTop: 20 }}>
+          ¿No tienes cuenta?{" "}
+          <Text variant="labelLarge" style={{ color: colors.primary }}>
+            Regístrate aquí
+          </Text>
+        </Text>
+
+        <View style={{ marginTop: 20, gap: 12 }}>
+          <TextInput
+            value={user?.email}
+            onChangeText={(email) => setUser({ ...user, email })}
+            mode="flat"
+            inputMode="email"
+            label="Correo electrónico"
+            placeholder="usuario@email.com"
+            style={{ backgroundColor: "white" }}
+            left={<TextInput.Icon icon="email-outline" />}
           />
 
-          <Controller
-            name="password"
-            control={control}
-            rules={{ required: true }}
-            render={({ field, fieldState: { error } }) => (
-              <>
-                <TextInput
-                  value={field.value}
-                  onChangeText={field.onChange}
-                  label="Contraseña"
-                  placeholder="********"
-                  secureTextEntry={false}
-                  style={{
-                    backgroundColor: "white",
-                  }}
-                  left={<TextInput.Icon icon="lock-outline" />}
-                  right={
-                    <TextInput.Icon
-                      icon={false ? "eye-off" : "eye"}
-                      onPress={() => {}}
-                    />
-                  }
-                />
-
-                {error && (
-                  <HelperText type="error" visible={true}>
-                    La contraseña es requerida
-                  </HelperText>
-                )}
-              </>
-            )}
+          <TextInput
+            value={user?.password}
+            onChangeText={(password) => setUser({ ...user, password })}
+            mode="flat"
+            label="Contraseña"
+            inputMode="text"
+            secureTextEntry={hidePassword}
+            placeholder="********"
+            style={{ backgroundColor: "white" }}
+            left={<TextInput.Icon icon="lock-outline" />}
+            right={
+              <TextInput.Icon
+                icon={hidePassword ? "eye" : "eye-off"}
+                onPress={() => setHidePassword(!hidePassword)}
+              />
+            }
           />
-
-          <MotiView
-            from={{ opacity: 0, translateY: 50 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "timing", duration: 1000, delay: 0 }}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 15,
-              marginTop: 20,
-            }}
-          >
-            <IconButton
-              icon="arrow-right"
-              mode="contained"
-              disabled={!isDirty || !isValid}
-              onPress={onSubmit}
-            />
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "600",
-                opacity: 0.9,
-              }}
-            >
-              Iniciar sesión
-            </Text>
-          </MotiView>
         </View>
+
+        <SubmitComponent
+          handleSignIn={handleSignIn}
+          loading={loading}
+          submitEnabled={submitEnabled}
+          mainText="Iniciar sesión"
+          secondaryText="Iniciando sesión..."
+        />
       </ScrollView>
     </SafeAreaView>
   );

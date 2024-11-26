@@ -1,5 +1,3 @@
-import { Italiana_400Regular, useFonts } from "@expo-google-fonts/italiana";
-import { Raleway_300Light } from "@expo-google-fonts/raleway";
 import { ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -17,11 +15,6 @@ type AuthOptionsScreenProps = {
 };
 
 export const AuthOptionsScreen = ({ navigation }: AuthOptionsScreenProps) => {
-  let [fontsLoaded] = useFonts({
-    Italiana_400Regular,
-    Raleway_300Light,
-  });
-
   return (
     <>
       <StatusBar hidden />

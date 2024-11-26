@@ -26,10 +26,6 @@ export type DrawerParamList = {
   Invitados: undefined;
   Eventos: undefined;
   QRCode: undefined;
-  Profile: undefined;
-  ProfileEdit: undefined;
-  ProfileInfo: undefined;
-  ProfileQuestions: undefined;
 };
 
 export type RootStackParamList = {
@@ -43,6 +39,12 @@ export type RootStackParamList = {
 };
 
 export const ROUTES = {
+  ROOT: {
+    AUTH: "Auth",
+    MAIN: "Main",
+    MODAL: "Modal",
+    PROFILE: "Profile",
+  },
   AUTH: {
     LOGIN: "Login",
     REGISTER: "Register",
@@ -51,14 +53,14 @@ export const ROUTES = {
   },
   DRAWER: {
     TABS: "Tabs",
-    PROFILE: "Profile",
     GUESTS: "Invitados",
     QRCODE: "QRCode",
     EVENTS: "Eventos",
   },
-  ROOT: {
-    AUTH: "Auth",
-    MAIN: "Main",
-    MODAL: "Modal",
+  PROFILE: {
+    PROFILE: "Profile",
+    PROFILE_EDIT: "ProfileEdit",
+    PROFILE_INFO: "ProfileInfo",
+    PROFILE_QUESTIONS: "ProfileQuestions",
   },
 } as const;

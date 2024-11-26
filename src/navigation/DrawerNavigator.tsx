@@ -63,6 +63,7 @@ export const DrawerNavigator = ({ navigation }: DrawerNavigatorProps) => {
             />
           ),
           title: "Inicio",
+          headerTitle: "Bienvenido",
         }}
       />
 

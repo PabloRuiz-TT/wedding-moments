@@ -1,10 +1,6 @@
-import { NavigationProp, Route, RouteProp } from "@react-navigation/native";
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { BottomNavigation, Icon, Text } from "react-native-paper";
-import { useTheme } from "react-native-paper";
+import { BottomNavigation } from "react-native-paper";
 import { BaseRoute } from "react-native-paper/lib/typescript/components/BottomNavigation/BottomNavigation";
-import { TabsParamList } from "../types/navigation.types";
 import { HomeScreen } from "../screens/main/home/HomeScreen";
 import { ItinerarioScreen } from "../screens/main/itinerario/ItinerarioScreen";
 import { RegalosScreen } from "../screens/main/regalos/RegalosScreen";
@@ -55,9 +51,4 @@ export const TabNavigator = () => {
       getLabelText={({ route }) => route.title}
     />
   );
-};
-
-type ScreenProps = {
-  navigation: NavigationProp<TabsParamList>;
-  route: RouteProp<TabsParamList, keyof TabsParamList>;
 };

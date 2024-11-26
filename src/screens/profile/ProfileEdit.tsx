@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ScrollView, View, StyleSheet, Text } from "react-native";
 import { TextInput, Button, Avatar, Title } from "react-native-paper";
-import PhoneInput from "react-native-phone-number-input";
 
 const ProfileEditScreen = () => {
   const [nombre, setNombre] = useState("William");
@@ -75,7 +74,7 @@ const ProfileEditScreen = () => {
         </View>
 
         <View style={styles.phoneContainer}>
-          <PhoneInput
+          {/* <PhoneInput
             defaultCode="US"
             layout="first"
             value={telefono}
@@ -83,7 +82,7 @@ const ProfileEditScreen = () => {
             onChangeText={handlePhoneChange}
             containerStyle={styles.phoneInput}
             textInputStyle={styles.phoneTextInput}
-          />
+          /> */}
         </View>
 
         <TextInput
