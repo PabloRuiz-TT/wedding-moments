@@ -1,60 +1,80 @@
 import { ActivityIndicator, Text } from "react-native-paper";
 import { useEffect, useState } from "react";
-import { PersonaService } from "../../../services/persona";
-import { StatusBar } from "expo-status-bar";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useHome } from "../../../contexts/home/HomeContext";
-import { Evento } from "../../../services/evento";
 import { HomeEmpty } from "./HomeEmpty";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const personaService = PersonaService.getInstance();
+import { BodaState, useBodaStore } from "../../../store/useBodaStore";
 
 export const HomeScreen = () => {
-  const navigation = useNavigation<NavigationProp<any>>();
-  const [evento, setEvento] = useState<Evento | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const [boda, setBoda] = useState<BodaState>({} as BodaState);
+  const [greet, setGreet] = useState<string>("");
 
-  const { obtenerBodaByAdministrador }: any = useHome();
+  const { obtenerBodaPorUsuario } = useBodaStore();
 
   useEffect(() => {
-    setLoading(true);
     (async () => {
-      try {
-        const user: any = JSON.parse(
-          (await AsyncStorage.getItem("user")) || "{}"
-        );
+      const hora = new Date().getHours();
 
-        const userEvento = await obtenerBodaByAdministrador(user.UsuarioID);
-
-        if (userEvento) {
-          setEvento(userEvento);
-        }
-      } catch (error) {
-        console.log("Error", error);
+      if (hora >= 0 && hora < 12) {
+        setGreet("Buenos días");
+      } else if (hora >= 12 && hora < 19) {
+        setGreet("Buenas tardes");
+      } else {
+        setGreet("Buenas noches");
       }
+
+      const userJson = await AsyncStorage.getItem("user");
+
+      const { user } = JSON.parse(userJson || "{}");
+
+      const data = await obtenerBodaPorUsuario(user.uid);
+
+      setBoda(data);
+
+      setLoading(false);
     })();
-    setLoading(false);
   }, []);
 
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator animating={true} />
+        <ActivityIndicator />
       </View>
     );
   }
 
-  return (
-    <>
-      <StatusBar hidden />
+  if (!boda) {
+    return <HomeEmpty />;
+  }
 
-      {!evento ? (
-        <HomeEmpty />
-      ) : (
-        <Text>Evento encontrados {JSON.stringify(evento)}</Text>
-      )}
-    </>
+  return (
+    <ScrollView style={{ flex: 1, padding: 12, backgroundColor: "white" }}>
+      <View style={{ gap: 2 }}>
+        <Text
+          style={{
+            fontSize: 42,
+          }}
+        >
+          {greet}
+        </Text>
+        <Text
+          style={{
+            fontSize: 24,
+          }}
+        >
+          {boda.usuarioID}
+        </Text>
+      </View>
+
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          marginTop: 48,
+          gap: 16,
+        }}
+      ></View>
+    </ScrollView>
   );
 };

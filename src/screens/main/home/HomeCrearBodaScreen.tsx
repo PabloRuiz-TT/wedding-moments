@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, View } from "react-native";
-import { Button, HelperText, Text, TextInput } from "react-native-paper";
-import { DatePickerModal } from "react-native-paper-dates";
+import { HelperText, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Evento } from "../../../services/evento";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useHome } from "../../../contexts/home/HomeContext";
-import { useAuth } from "../../../contexts/auth/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../../types/navigation.types";
+import { SubmitComponent } from "../../auth/components/SubmitComponent";
+import { BodaState, useBodaStore } from "../../../store/useBodaStore";
+import { DatePickerModal } from "react-native-paper-dates";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const HomeCrearBodaScreen = () => {
-  const [submitEnabled, setSubmitEnabled] = useState<boolean>(true);
-  const [fechaBoda, setFechaBoda] = useState<Date | undefined>(undefined);
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
-  const navigation = useNavigation<NavigationProp<any>>();
-  const { crearBoda } = useHome();
-  const [user, setUser] = useState<any>();
+  const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [evento, setEvento] = useState<Partial<Evento>>({
-    titulo: "Mi Boda",
-    descripcion: "Hola, te invito a mi boda",
+  const { crearBoda } = useBodaStore();
+
+  const [boda, setBoda] = useState<BodaState>({
+    titulo: "Mi boda",
+    mensaje: "Hola, te invito a mi boda",
     novio: "Juan",
     novia: "Maria",
-    fechaEvento: new Date().toISOString(),
+    fechaBoda: new Date(),
+    usuarioID: "",
   });
 
   type DatePickerResponse = {
@@ -31,7 +34,7 @@ export const HomeCrearBodaScreen = () => {
   };
 
   const onConfirm = ({ date }: DatePickerResponse) => {
-    setFechaBoda(date);
+    setBoda({ ...boda, fechaBoda: date });
     setTimeout(() => {
       setShowDatePicker(false);
     }, 0);
@@ -43,36 +46,45 @@ export const HomeCrearBodaScreen = () => {
     }, 0);
   };
 
-  useEffect(() => {
-    (async () => {
-      const user = JSON.parse((await AsyncStorage.getItem("user")) || "{}");
-
-      if (user) {
-        setUser(user);
-      }
-    })();
-  }, []);
-
-  const handleCrearBoda = async () => {
-    const newData: Evento = {
-      titulo: evento?.titulo || "",
-      descripcion: evento?.descripcion || "",
-      novio: evento?.novio || "",
-      novia: evento?.novia || "",
-      fechaEvento: fechaBoda?.toISOString() || "",
-      usuarioID: user?.UsuarioID,
-      ubicacion: "",
-    };
-
+  const onSubmit = async () => {
+    setIsSubmitting(true);
+    setEnableSubmit(false);
     try {
-      const response = await crearBoda(newData);
-      if (response > 0) {
-        navigation.goBack();
+      const userJson = await AsyncStorage.getItem("user");
+
+      const { user } = JSON.parse(userJson || "{}");
+
+      boda.usuarioID = user.uid;
+
+      const result = await crearBoda(boda);
+
+      if (result) {
+        navigation.canGoBack() && navigation.goBack();
       }
+
+      navigation.navigate("Main", { screen: "Tabs" });
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      console.log(error);
+      Alert.alert("Error", error);
+    } finally {
+      setIsSubmitting(false);
+      setEnableSubmit(true);
     }
   };
+
+  useEffect(() => {
+    if (
+      boda.titulo &&
+      boda.mensaje &&
+      boda.novio &&
+      boda.novia &&
+      boda.fechaBoda
+    ) {
+      setEnableSubmit(true);
+    } else {
+      setEnableSubmit(false);
+    }
+  }, [boda]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white", padding: 20 }}>
@@ -89,9 +101,9 @@ export const HomeCrearBodaScreen = () => {
         <View style={{ marginTop: 20, gap: 8 }}>
           <View style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <TextInput
+              value={boda?.titulo}
+              onChangeText={(text) => setBoda({ ...boda, titulo: text })}
               label="Titulo"
-              value={evento?.titulo}
-              onChangeText={(text) => setEvento({ ...evento, titulo: text })}
               mode="flat"
               inputMode="text"
               style={{ backgroundColor: "white" }}
@@ -104,11 +116,9 @@ export const HomeCrearBodaScreen = () => {
 
           <View style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <TextInput
+              value={boda?.mensaje}
+              onChangeText={(text) => setBoda({ ...boda, mensaje: text })}
               label="Mensaje"
-              value={evento?.descripcion}
-              onChangeText={(text) =>
-                setEvento({ ...evento, descripcion: text })
-              }
               mode="flat"
               inputMode="text"
               multiline
@@ -124,9 +134,9 @@ export const HomeCrearBodaScreen = () => {
 
           <View style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <TextInput
+              value={boda?.novio}
+              onChangeText={(text) => setBoda({ ...boda, novio: text })}
               label="Novio"
-              value={evento?.novio}
-              onChangeText={(text) => setEvento({ ...evento, novio: text })}
               mode="flat"
               inputMode="text"
               style={{ backgroundColor: "white" }}
@@ -140,9 +150,9 @@ export const HomeCrearBodaScreen = () => {
 
           <View style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             <TextInput
+              value={boda?.novia}
+              onChangeText={(text) => setBoda({ ...boda, novia: text })}
               label="Novia"
-              value={evento?.novia}
-              onChangeText={(text) => setEvento({ ...evento, novia: text })}
               mode="flat"
               inputMode="text"
               style={{ backgroundColor: "white" }}
@@ -165,7 +175,7 @@ export const HomeCrearBodaScreen = () => {
                   onPress={() => setShowDatePicker(true)}
                 />
               }
-              value={fechaBoda ? fechaBoda.toLocaleDateString() : ""}
+              value={boda?.fechaBoda?.toLocaleDateString()}
               editable={false}
               onPressIn={() => setShowDatePicker(true)}
             />
@@ -175,7 +185,7 @@ export const HomeCrearBodaScreen = () => {
               presentationStyle="pageSheet"
               visible={showDatePicker}
               onDismiss={onDismiss}
-              date={fechaBoda}
+              date={boda?.fechaBoda}
               onConfirm={(date) => onConfirm(date as DatePickerResponse)}
               allowEditing={false}
               inputEnabled={false}
@@ -183,14 +193,13 @@ export const HomeCrearBodaScreen = () => {
             />
           </View>
 
-          <Button
-            mode="text"
-            disabled={!submitEnabled}
-            onPress={handleCrearBoda}
-            style={{ marginTop: 20 }}
-          >
-            Crear Boda
-          </Button>
+          <SubmitComponent
+            onPress={onSubmit}
+            loading={isSubmitting}
+            submitEnabled={!enableSubmit}
+            mainText="Crear Boda"
+            secondaryText="Preparando tu boda..."
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -3,7 +3,6 @@ import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { registerTranslation } from "react-native-paper-dates";
-import { HomeProvider } from "./src/contexts/home/HomeContext";
 import { AuthenticationProvider } from "./src/providers/AuthProviders";
 
 export default function App() {
@@ -33,9 +32,7 @@ export default function App() {
       <PaperProvider>
         <NavigationContainer>
           <AuthenticationProvider>
-            <HomeProvider>
-              <RootNavigator />
-            </HomeProvider>
+            <RootNavigator />
           </AuthenticationProvider>
         </NavigationContainer>
       </PaperProvider>

@@ -28,12 +28,14 @@ export const ProfileNavigator = () => {
       initialRouteName="Profile"
     >
       <Profile.Screen name="Profile" component={ProfileScreen} />
-      <Profile.Screen name="ProfileEdit" component={ProfileEditScreen} />
-      <Profile.Screen name="ProfileInfo" component={ProfileInfoScreen} />
-      <Profile.Screen
-        name="ProfileQuestions"
-        component={ProfileQuestionsScreen}
-      />
+      <Profile.Group screenOptions={{ presentation: "modal" }}>
+        <Profile.Screen name="ProfileEdit" component={ProfileEditScreen} />
+        <Profile.Screen name="ProfileInfo" component={ProfileInfoScreen} />
+        <Profile.Screen
+          name="ProfileQuestions"
+          component={ProfileQuestionsScreen}
+        />
+      </Profile.Group>
     </Profile.Navigator>
   );
 };

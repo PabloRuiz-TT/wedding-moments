@@ -32,7 +32,10 @@ export const RegisterScreen = () => {
 
       await AsyncStorage.setItem("user", JSON.stringify(result));
 
-      navigation.goBack();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Main" }],
+      });
     } catch (error: any) {
       Alert.alert("Error", error.message);
     } finally {

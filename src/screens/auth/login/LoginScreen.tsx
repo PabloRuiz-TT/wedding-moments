@@ -35,7 +35,10 @@ export const LoginScreen = () => {
 
       await AsyncStorage.setItem("user", JSON.stringify(result));
 
-      navigation.goBack();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Main" }],
+      });
     } catch (error: any) {
       console.log(error);
       Alert.alert("Error", error);

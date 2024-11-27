@@ -1,4 +1,4 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
@@ -9,7 +9,8 @@ import {
   TouchableRipple,
   useTheme,
 } from "react-native-paper";
-import { ROUTES } from "../../../types/navigation.types";
+import { RootStackParamList } from "../../../types/navigation.types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const servicesImages = [
   {
@@ -32,7 +33,8 @@ const servicesImages = [
 
 export const HomeEmpty = () => {
   const { colors } = useTheme();
-  const navigation = useNavigation<NavigationProp<any>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [showButton, setShowButton] = useState(false);
   const fadeAnim = new Animated.Value(0);
@@ -149,7 +151,7 @@ export const HomeEmpty = () => {
         }}
       >
         <TouchableRipple
-          onPress={() => navigation.navigate(ROUTES.ROOT.MODAL)}
+          onPress={() => navigation.navigate("HomeCrearBoda")}
           style={{
             backgroundColor: "white",
             paddingRight: 16,

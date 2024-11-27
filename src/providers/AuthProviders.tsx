@@ -13,12 +13,14 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigation.navigate("Main", {
-          screen: "Tabs",
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
         });
       } else {
-        navigation.navigate("Auth", {
-          screen: "Boarding",
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Auth" }],
         });
       }
     });

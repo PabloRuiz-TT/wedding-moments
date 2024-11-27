@@ -12,6 +12,7 @@ import { Icon, IconButton, Text, useTheme } from "react-native-paper";
 import { useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { HomeCrearBodaScreen } from "../screens/main/home/HomeCrearBodaScreen";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 

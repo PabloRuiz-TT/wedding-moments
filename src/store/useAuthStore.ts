@@ -6,7 +6,6 @@ import {
 } from "firebase/auth";
 import { db, firebase } from "../database/firebase";
 import { collection, addDoc } from "firebase/firestore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type Register = {
   nombre: string;
