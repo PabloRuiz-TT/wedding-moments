@@ -53,7 +53,7 @@ export const AuthOptionsScreen = ({ navigation }: AuthOptionsScreenProps) => {
               <Text
                 from={{ opacity: 0, translateY: 100 }}
                 animate={{ opacity: 1, translateY: 0 }}
-                transition={{ type: "timing", duration: 2000 }}
+                transition={{ type: "timing", duration: 1000 }}
                 style={{
                   fontSize: 40,
                   fontFamily: "Italiana_400Regular",
@@ -67,11 +67,12 @@ export const AuthOptionsScreen = ({ navigation }: AuthOptionsScreenProps) => {
               <Text
                 from={{ opacity: 0, translateY: 100 }}
                 animate={{ opacity: 1, translateY: 0 }}
-                transition={{ type: "timing", duration: 2000, delay: 1000 }}
+                transition={{ type: "timing", duration: 1000, delay: 500 }}
                 style={{
                   fontSize: 20,
                   fontFamily: "Raleway_300Light",
                   color: "white",
+                  marginTop: 12,
                 }}
               >
                 Regístrate o inicia sesión para comenzar
@@ -81,7 +82,7 @@ export const AuthOptionsScreen = ({ navigation }: AuthOptionsScreenProps) => {
             <MotiView
               from={{ opacity: 0, translateY: 100 }}
               animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: "timing", duration: 2000, delay: 2000 }}
+              transition={{ type: "timing", duration: 1000, delay: 500 }}
               style={{
                 flex: 0.4,
                 justifyContent: "flex-end",

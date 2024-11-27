@@ -2,7 +2,7 @@ import { MotiText, MotiView } from "moti";
 import { IconButton } from "react-native-paper";
 
 type SubmitComponentProps = {
-  handleSignIn: () => void;
+  onPress: () => void;
   submitEnabled: boolean;
   loading: boolean;
   mainText: string;
@@ -10,7 +10,7 @@ type SubmitComponentProps = {
 };
 
 export const SubmitComponent = ({
-  handleSignIn,
+  onPress,
   loading,
   submitEnabled,
   mainText,
@@ -32,8 +32,8 @@ export const SubmitComponent = ({
       <IconButton
         icon="arrow-right"
         mode="contained"
-        disabled={!submitEnabled}
-        onPress={handleSignIn}
+        disabled={submitEnabled}
+        onPress={onPress}
         loading={loading}
       />
       <MotiText>{loading ? secondaryText : mainText}</MotiText>

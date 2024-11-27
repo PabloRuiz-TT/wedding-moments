@@ -1,10 +1,17 @@
 import { NavigatorScreenParams } from "@react-navigation/native";
 
 export type AuthStackParamList = {
-  Login: undefined;
-  Register: undefined;
   Boarding: undefined;
   AuthOptionsAccess: undefined;
+  Login: undefined;
+  Register: undefined;
+};
+
+export type DrawerParamList = {
+  Tabs: undefined;
+  Invitados: undefined;
+  Eventos: undefined;
+  QRCode: undefined;
 };
 
 export type ProfileStackParamList = {
@@ -14,49 +21,33 @@ export type ProfileStackParamList = {
   ProfileQuestions: undefined;
 };
 
-export type TabsParamList = {
-  home: undefined;
-  itinerario: undefined;
-  regalos: undefined;
-  photos: undefined;
-};
-
-export type DrawerParamList = {
-  Tabs: NavigatorScreenParams<TabsParamList>;
-  Invitados: undefined;
-  Eventos: undefined;
-  QRCode: undefined;
-};
-
 export type RootStackParamList = {
+  Loading: undefined;
   Auth: NavigatorScreenParams<AuthStackParamList>;
   Main: NavigatorScreenParams<DrawerParamList>;
   Profile: NavigatorScreenParams<ProfileStackParamList>;
-  Modal?: {
-    type: "success" | "error" | "warning";
-    message: string;
-  };
 };
 
 export const ROUTES = {
   ROOT: {
     AUTH: "Auth",
+    LOADING: "Loading",
     MAIN: "Main",
-    MODAL: "Modal",
     PROFILE: "Profile",
   },
   AUTH: {
-    LOGIN: "Login",
-    REGISTER: "Register",
     BOARDING: "Boarding",
     OPTIONS_ACCESS: "AuthOptionsAccess",
+    LOGIN: "Login",
+    REGISTER: "Register",
   },
-  DRAWER: {
+  MAIN: {
     TABS: "Tabs",
-    GUESTS: "Invitados",
-    QRCODE: "QRCode",
-    EVENTS: "Eventos",
+    Invitados: "Invitados",
+    Eventos: "Eventos",
+    QRCode: "QRCode",
   },
+
   PROFILE: {
     PROFILE: "Profile",
     PROFILE_EDIT: "ProfileEdit",
@@ -64,3 +55,9 @@ export const ROUTES = {
     PROFILE_QUESTIONS: "ProfileQuestions",
   },
 } as const;
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}

@@ -19,7 +19,7 @@ export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
       PRAGMA journal_mode = 'wal';
       
       CREATE TABLE IF NOT EXISTS usuarios (
-          UsuarioID INTEGER PRIMARY KEY AUTOINCREMENT,
+          UsuarioID TEXT PRIMARY KEY,
           Nombre TEXT NOT NULL,
           Correo TEXT UNIQUE NOT NULL,
           Password TEXT NOT NULL,
@@ -32,72 +32,13 @@ export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
           EventoID INTEGER PRIMARY KEY AUTOINCREMENT,
           Titulo TEXT NOT NULL,
           Descripcion TEXT,
+          Novio TEXT NOT NULL,
+          Novia TEXT NOT NULL,
           FechaEvento TEXT NOT NULL,
           Ubicacion TEXT,
           AdministradorID INTEGER,
           FechaCreacion TEXT DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (AdministradorID) REFERENCES Usuarios(UsuarioID)
-        );
-        
-        CREATE TABLE IF NOT EXISTS itinerarios (
-          ItinerarioID INTEGER PRIMARY KEY AUTOINCREMENT,
-          EventoID INTEGER,
-          Titulo TEXT NOT NULL,
-          Descripcion TEXT,
-          HoraInicio TEXT NOT NULL,
-          HoraFin TEXT NOT NULL,
-          FOREIGN KEY (EventoID) REFERENCES Eventos(EventoID) ON DELETE CASCADE
-        );
-
-        CREATE TABLE IF NOT EXISTS invitados (
-          InvitadoID INTEGER PRIMARY KEY AUTOINCREMENT,
-          EventoID INTEGER,
-          Nombre TEXT NOT NULL,
-          Correo TEXT NOT NULL,
-          ConfirmacionAsistencia TEXT,
-          Comentarios TEXT,
-          FOREIGN KEY (EventoID) REFERENCES Eventos(EventoID) ON DELETE CASCADE
-        );
-
-
-        CREATE TABLE IF NOT EXISTS historialEventos (
-          HistorialID INTEGER PRIMARY KEY AUTOINCREMENT,
-          EventoID INTEGER,
-          Descripcion TEXT NOT NULL,
-          Fecha TEXT DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (EventoID) REFERENCES Eventos(EventoID) ON DELETE CASCADE
-        );
-
-        CREATE TABLE IF NOT EXISTS comentarios (
-          ComentarioID INTEGER PRIMARY KEY AUTOINCREMENT,
-          EventoID INTEGER,
-          UsuarioID INTEGER,
-          Comentario TEXT NOT NULL,
-          FechaComentario TEXT DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (EventoID) REFERENCES Eventos(EventoID) ON DELETE CASCADE,
-          FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
-        );
-
-        CREATE TABLE IF NOT EXISTS recuerdos (
-          RecuerdoID INTEGER PRIMARY KEY AUTOINCREMENT,
-          EventoID INTEGER,
-          UsuarioID INTEGER,
-          Imagen TEXT NOT NULL,
-          Comentario TEXT,
-          FechaSubida TEXT DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (EventoID) REFERENCES Eventos(EventoID) ON DELETE CASCADE,
-          FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
-        );
-
-        CREATE TABLE IF NOT EXISTS regalos (
-          RegaloID INTEGER PRIMARY KEY AUTOINCREMENT,
-          EventoID INTEGER,
-          NombreRegalo TEXT NOT NULL,
-          Descripcion TEXT,
-          Precio REAL,
-          EnlaceCompra TEXT,
-          Estado TEXT DEFAULT 'disponible',
-          FOREIGN KEY (EventoID) REFERENCES Eventos(EventoID) ON DELETE CASCADE
         );
         `
     );

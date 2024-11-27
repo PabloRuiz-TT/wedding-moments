@@ -45,6 +45,7 @@ export const TabNavigator = () => {
 
   return (
     <BottomNavigation
+      keyboardHidesNavigationBar={true}
       navigationState={{ index, routes: TABS_ROUTES }}
       onIndexChange={setIndex}
       renderScene={renderScene}

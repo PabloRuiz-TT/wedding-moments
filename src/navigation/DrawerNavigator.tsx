@@ -4,36 +4,29 @@ import {
 } from "@react-navigation/drawer";
 import {
   DrawerParamList,
-  ProfileStackParamList,
+  RootStackParamList,
   ROUTES,
 } from "../types/navigation.types";
 import { TabNavigator } from "./TabNavigator";
-import { Icon, IconButton, useTheme } from "react-native-paper";
+import { Icon, IconButton, Text, useTheme } from "react-native-paper";
 import { useMemo } from "react";
-import ProfileScreen from "../screens/profile/Profile";
-import ProfileEditScreen from "../screens/profile/ProfileEdit";
-import ProfileInfoScreen from "../screens/profile/ProfileInfo";
-import ProfileQuestionsScreen from "../screens/profile/ProfileQuestions";
-import { NavigationProp } from "@react-navigation/native";
-import { Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 const ICON_SIZE = 20;
 
-type DrawerNavigatorProps = {
-  navigation: NavigationProp<ProfileStackParamList, "Profile">;
-};
-
-export const DrawerNavigator = ({ navigation }: DrawerNavigatorProps) => {
+export const DrawerNavigator = () => {
   const { colors } = useTheme();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const screenOptions = useMemo<DrawerNavigationOptions>(
     () => ({
       drawerLabelStyle: { color: "black" },
       drawerActiveBackgroundColor: colors.primaryContainer,
       drawerType: "front",
-      drawerHideStatusBarOnOpen: true,
       sceneStyle: { backgroundColor: "white" },
       headerRightContainerStyle: { paddingRight: 12 },
       headerShadowVisible: false,
@@ -48,7 +41,7 @@ export const DrawerNavigator = ({ navigation }: DrawerNavigatorProps) => {
   return (
     <Drawer.Navigator screenOptions={screenOptions}>
       <Drawer.Screen
-        name={ROUTES.DRAWER.TABS}
+        name={ROUTES.MAIN.TABS}
         component={TabNavigator}
         options={{
           drawerIcon: () => <Icon source="home" size={ICON_SIZE} />,
@@ -57,19 +50,19 @@ export const DrawerNavigator = ({ navigation }: DrawerNavigatorProps) => {
               icon="account"
               size={20}
               iconColor="black"
-              onPress={() => {
-                navigation.navigate("Profile");
-              }}
+              onPress={() =>
+                navigation.navigate("Profile", { screen: "Profile" })
+              }
             />
           ),
           title: "Inicio",
-          headerTitle: "Bienvenido",
+          headerTitle: "",
         }}
       />
 
       <Drawer.Screen
-        name={ROUTES.DRAWER.GUESTS}
-        component={() => null}
+        name={ROUTES.MAIN.Invitados}
+        component={() => <Text>Invitados</Text>}
         options={{
           title: "Invitados",
           drawerIcon: () => <Icon source="account-multiple" size={ICON_SIZE} />,
@@ -77,8 +70,8 @@ export const DrawerNavigator = ({ navigation }: DrawerNavigatorProps) => {
         }}
       />
       <Drawer.Screen
-        name={ROUTES.DRAWER.QRCODE}
-        component={() => null}
+        name={ROUTES.MAIN.QRCode}
+        component={() => <Text>QRCode</Text>}
         options={{
           title: "Invitación QR",
           drawerIcon: () => <Icon source="qrcode" size={ICON_SIZE} />,
@@ -88,8 +81,8 @@ export const DrawerNavigator = ({ navigation }: DrawerNavigatorProps) => {
         }}
       />
       <Drawer.Screen
-        name={ROUTES.DRAWER.EVENTS}
-        component={() => null}
+        name={ROUTES.MAIN.Eventos}
+        component={() => <Text>Eventos</Text>}
         options={{
           title: "Eventos",
           drawerIcon: () => <Icon source="party-popper" size={ICON_SIZE} />,

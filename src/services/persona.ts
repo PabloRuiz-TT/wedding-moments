@@ -1,6 +1,14 @@
 import * as SQLite from "expo-sqlite";
 import { DATABASE_NAME } from "../database/database";
 
+export type RegisterDTO = {
+  usuarioID?: string;
+  nombre: string;
+  correo: string;
+  password: string;
+  telefono: string;
+};
+
 export class PersonaService {
   private db!: SQLite.SQLiteDatabase;
 
@@ -12,26 +20,36 @@ export class PersonaService {
     return new PersonaService();
   }
 
-  public async createPersona(
-    nombre: string,
-    correo: string,
-    password: string,
-    telefono: string,
-    rol: string
-  ) {
+  public async createPersona(data: RegisterDTO, isAnonymous = false) {
+    const { usuarioID, nombre, correo, password, telefono } = data;
+
     const result = await this.db.runAsync(
-      `INSERT INTO usuarios (Nombre, Correo, Password, Telefono, Rol) VALUES (?, ?, ?, ?, ?)`,
-      [nombre, correo, password, telefono, rol]
+      `INSERT INTO usuarios (UsuarioID, Nombre, Correo, Password, Telefono, Rol) VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        usuarioID!,
+        nombre,
+        correo,
+        password,
+        telefono,
+        isAnonymous ? "Invitado" : "Admin",
+      ]
     );
 
     return result.lastInsertRowId;
   }
 
   public async getPersonaByEmail(correo: string) {
-    return await this.db.getFirstAsync(
-      `SELECT * FROM usuarios WHERE Correo = ?`,
-      [correo]
-    );
+    try {
+      console.log("correo", correo);
+      const result = await this.db.getFirstAsync(
+        `SELECT * FROM usuarios WHERE Correo = ?`,
+        [correo]
+      );
+
+      return result;
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   public async getPersonaById(id: string) {

@@ -1,33 +1,44 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
-import { PaperProvider, ProgressBar } from "react-native-paper";
+import { KeyboardAvoidingView, StyleSheet } from "react-native";
+import { PaperProvider } from "react-native-paper";
 import { RootNavigator } from "./src/navigation/RootNavigator";
-import { Suspense } from "react";
-import { SQLiteProvider } from "expo-sqlite";
-import { AuthProvider } from "./src/contexts/auth/AuthContext";
-import { DATABASE_NAME, migrateDbIfNeeded } from "./src/database/database";
+import { registerTranslation } from "react-native-paper-dates";
+import { HomeProvider } from "./src/contexts/home/HomeContext";
+import { AuthenticationProvider } from "./src/providers/AuthProviders";
 
 export default function App() {
+  registerTranslation("es", {
+    save: "Aceptar",
+    selectSingle: "Fecha",
+    selectMultiple: "",
+    selectRange: "",
+    notAccordingToDateFormat: (inputFormat) =>
+      `Date format must be ${inputFormat}`,
+    mustBeHigherThan: (date) => `Must be later then ${date}`,
+    mustBeLowerThan: (date) => `Must be earlier then ${date}`,
+    mustBeBetween: (startDate, endDate) =>
+      `Must be between ${startDate} - ${endDate}`,
+    dateIsDisabled: "Day is not allowed",
+    previous: "Anterior",
+    next: "Siguiente",
+    typeInDate: "Type in date",
+    pickDateFromCalendar: "Pick date from calendar",
+    close: "Cerrar",
+    hour: "",
+    minute: "",
+  });
+
   return (
-    <KeyboardAvoidingView
-      style={styles.keyboardAvoidingView}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <AuthProvider>
-        <Suspense fallback={<ProgressBar indeterminate />}>
-          <SQLiteProvider
-            useSuspense={true}
-            databaseName={DATABASE_NAME}
-            onInit={migrateDbIfNeeded}
-          >
-            <PaperProvider>
-              <NavigationContainer>
-                <RootNavigator />
-              </NavigationContainer>
-            </PaperProvider>
-          </SQLiteProvider>
-        </Suspense>
-      </AuthProvider>
+    <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
+      <PaperProvider>
+        <NavigationContainer>
+          <AuthenticationProvider>
+            <HomeProvider>
+              <RootNavigator />
+            </HomeProvider>
+          </AuthenticationProvider>
+        </NavigationContainer>
+      </PaperProvider>
     </KeyboardAvoidingView>
   );
 }
