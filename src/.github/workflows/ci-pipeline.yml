@@ -1,5 +1,6 @@
 name: CI Pipeline
 
+# Evento que dispara el pipeline
 on:
   push:
     branches:
@@ -9,23 +10,33 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      # Paso 1: Clonar el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      # Paso 2: Configurar Node.js (ajusta según tu proyecto)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-    - name: Install Dependencies
-      run: npm install
+      # Paso 3: Instalar dependencias
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run Tests
-      run: npm test
+      # Paso 4: Ejecutar pruebas
+      - name: Run Tests
+        run: npm test
 
-    - name: Build Project
-      run: npm run build
+      # Paso 5: Compilar el proyecto
+      - name: Build Project
+        run: npm run build
+
+      # Paso 6: Notificación de resultados
+      - name: Notify Build Status
+        if: ${{ failure() }}
+        run: echo "La compilación o las pruebas han fallado. Verifica los errores."
