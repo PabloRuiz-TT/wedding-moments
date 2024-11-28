@@ -44,7 +44,7 @@ export const HomeScreen = () => {
     );
   }
 
-  if (!boda) {
+  if (boda) {
     return <HomeEmpty />;
   }
 
@@ -63,7 +63,7 @@ export const HomeScreen = () => {
             fontSize: 24,
           }}
         >
-          {boda.usuarioID}
+          Texto
         </Text>
       </View>
 

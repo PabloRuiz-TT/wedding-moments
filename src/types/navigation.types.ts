@@ -27,6 +27,7 @@ export type RootStackParamList = {
   Main: NavigatorScreenParams<DrawerParamList>;
   Profile: NavigatorScreenParams<ProfileStackParamList>;
   HomeCrearBoda: undefined;
+  CamaraPermiso: undefined;
 };
 
 export const ROUTES = {
@@ -36,6 +37,7 @@ export const ROUTES = {
     MAIN: "Main",
     PROFILE: "Profile",
     HOME_CREAR_BODA: "HomeCrearBoda",
+    CamaraPermiso: "CamaraPermiso",
   },
   AUTH: {
     BOARDING: "Boarding",

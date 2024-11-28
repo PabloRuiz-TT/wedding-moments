@@ -5,6 +5,7 @@ import { LoadingScreen } from "../screens/loading/LoadingScreen";
 import { DrawerNavigator } from "./DrawerNavigator";
 import { ProfileNavigator } from "./ProfileNavigator";
 import { HomeCrearBodaScreen } from "../screens/main/home/HomeCrearBodaScreen";
+import { CamaraPermiso } from "../screens/main/album/components/CamaraPermiso";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -14,7 +15,7 @@ export const RootNavigator = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Loading"
+      initialRouteName="Auth"
     >
       <Stack.Screen name={ROUTES.ROOT.LOADING} component={LoadingScreen} />
 
@@ -25,9 +26,17 @@ export const RootNavigator = () => {
       <Stack.Screen name={ROUTES.ROOT.PROFILE} component={ProfileNavigator} />
 
       <Stack.Screen
-        name={ROUTES.ROOT.HOME_CREAR_BODA}
+        name={ROUTES.ROOT.CamaraPermiso}
         component={HomeCrearBodaScreen}
       />
+
+      <Stack.Group
+        screenOptions={{
+          presentation: "modal",
+        }}
+      >
+        <Stack.Screen name="HomeCrearBoda" component={CamaraPermiso} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 };

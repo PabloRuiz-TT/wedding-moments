@@ -24,10 +24,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-sqlite",
-      "expo-font",
-      "expo-localization"
-    ]
+    "plugins": ["expo-sqlite", "expo-font", "expo-localization", "expo-camera"]
   }
 }
