@@ -37,6 +37,9 @@ jobs:
         run: npm run build
 
       # Paso 6: Notificación de resultados
-      - name: Notify Build Status
-        if: ${{ failure() }}
-        run: echo "La compilación o las pruebas han fallado. Verifica los errores."
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.23.0
+          with:
+            payload: '{"text":"El pipeline se ha ejecutado exitosamente."}'
+        env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
