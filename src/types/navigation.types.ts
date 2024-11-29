@@ -5,6 +5,7 @@ export type AuthStackParamList = {
   AuthOptionsAccess: undefined;
   Login: undefined;
   Register: undefined;
+  AuthSkip: undefined;
 };
 
 export type DrawerParamList = {

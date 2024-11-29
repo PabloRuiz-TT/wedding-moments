@@ -1,13 +1,11 @@
-import {
-  createNativeStackNavigator,
-  NativeStackNavigationProp,
-} from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthStackParamList, ROUTES } from "../types/navigation.types";
 import { BoardingScreen } from "../screens/auth/boarding/BoardingScreen";
 import { AuthOptionsScreen } from "../screens/auth/boarding/AuthOptionsScreen";
 import { LoginScreen } from "../screens/auth/login/LoginScreen";
 import { RegisterScreen } from "../screens/auth/register/RegisterScreen";
 import { Platform } from "react-native";
+import { AuthSkipScreen } from "../screens/auth/skip/AuthSkipScreen";
 
 const Auth = createNativeStackNavigator<AuthStackParamList>();
 
@@ -46,14 +44,9 @@ export const AuthNavigator = () => {
           gestureDirection: "vertical",
         }}
       >
-        <Auth.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{
-            gestureEnabled: true,
-          }}
-        />
+        <Auth.Screen name="Login" component={LoginScreen} />
         <Auth.Screen name="Register" component={RegisterScreen} />
+        <Auth.Screen name="AuthSkip" component={AuthSkipScreen} />
       </Auth.Group>
     </Auth.Navigator>
   );

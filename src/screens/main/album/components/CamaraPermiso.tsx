@@ -32,13 +32,10 @@ export const CamaraPermiso = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <>
       {Platform.OS === "android" && (
         <Appbar.Header style={styles.header}>
-          <Appbar.BackAction
-            onPress={() => navigation.goBack()}
-            color={colors.primary}
-          />
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="" />
         </Appbar.Header>
       )}
@@ -122,7 +119,7 @@ export const CamaraPermiso = () => {
           </Button>
         </MotiView>
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 };
 
