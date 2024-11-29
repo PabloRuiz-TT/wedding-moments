@@ -12,7 +12,6 @@ import { Icon, IconButton, Text, useTheme } from "react-native-paper";
 import { useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { HomeCrearBodaScreen } from "../screens/main/home/HomeCrearBodaScreen";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
@@ -20,6 +19,7 @@ const ICON_SIZE = 20;
 
 export const DrawerNavigator = () => {
   const { colors } = useTheme();
+
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -50,7 +50,6 @@ export const DrawerNavigator = () => {
             <IconButton
               icon="account"
               size={20}
-              iconColor="black"
               onPress={() =>
                 navigation.navigate("Profile", { screen: "Profile" })
               }

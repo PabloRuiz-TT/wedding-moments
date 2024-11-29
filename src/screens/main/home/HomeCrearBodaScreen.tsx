@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
-import { HelperText, Text, TextInput } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Alert, Platform, ScrollView, View } from "react-native";
+import { Appbar, HelperText, Text, TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../types/navigation.types";
@@ -20,10 +19,10 @@ export const HomeCrearBodaScreen = () => {
   const { crearBoda } = useBodaStore();
 
   const [boda, setBoda] = useState<BodaState>({
-    titulo: "Mi boda",
-    mensaje: "Hola, te invito a mi boda",
-    novio: "Juan",
-    novia: "Maria",
+    titulo: "",
+    mensaje: "",
+    novio: "",
+    novia: "",
     fechaBoda: new Date(),
     usuarioID: "",
   });
@@ -87,8 +86,17 @@ export const HomeCrearBodaScreen = () => {
   }, [boda]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white", padding: 20 }}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+    <>
+      {Platform.OS === "android" ? (
+        <Appbar.Header style={{ backgroundColor: "white" }}>
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title="" />
+        </Appbar.Header>
+      ) : null}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, padding: 20 }}
+      >
         <Text
           style={{
             fontSize: 42,
@@ -202,6 +210,6 @@ export const HomeCrearBodaScreen = () => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 };
