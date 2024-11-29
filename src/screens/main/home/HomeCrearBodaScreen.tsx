@@ -5,9 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../types/navigation.types";
 import { SubmitComponent } from "../../auth/components/SubmitComponent";
-import { BodaState, useBodaStore } from "../../../store/useBodaStore";
 import { DatePickerModal } from "react-native-paper-dates";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Boda, BodaService } from "../../../services/BodaService";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { LogService } from "../../../services/LogService";
+
+const bodaService = BodaService.getInstance();
+const logService = LogService.getInstance();
 
 export const HomeCrearBodaScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
@@ -15,25 +19,23 @@ export const HomeCrearBodaScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  const { crearBoda } = useBodaStore();
-
-  const [boda, setBoda] = useState<BodaState>({
-    titulo: "",
-    mensaje: "",
-    novio: "",
-    novia: "",
-    fechaBoda: new Date(),
-    usuarioID: "",
-  });
-
   type DatePickerResponse = {
     date: Date;
     type: "dismissed" | "confirmed";
   };
 
+  const [boda, setBoda] = useState<Boda>({
+    titulo: "Mi boda",
+    mensaje: "¡Estamos muy felices de compartir este día contigo!",
+    fechaBoda: "",
+    usuarioId: "",
+    novio: "Novio",
+    novia: "Novia",
+    bodaId: "",
+  });
+
   const onConfirm = ({ date }: DatePickerResponse) => {
-    setBoda({ ...boda, fechaBoda: date });
+    setBoda({ ...boda, fechaBoda: date.toLocaleDateString() });
     setTimeout(() => {
       setShowDatePicker(false);
     }, 0);
@@ -47,29 +49,28 @@ export const HomeCrearBodaScreen = () => {
 
   const onSubmit = async () => {
     setIsSubmitting(true);
-    setEnableSubmit(false);
     try {
-      const userJson = await AsyncStorage.getItem("user");
+      await bodaService.crearBoda(boda);
 
-      const { user } = JSON.parse(userJson || "{}");
-
-      boda.usuarioID = user.uid;
-
-      const result = await crearBoda(boda);
-
-      if (result) {
-        navigation.canGoBack() && navigation.goBack();
-      }
-
-      navigation.navigate("Main", { screen: "Tabs" });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "HomeMapScreen" }],
+      });
     } catch (error: any) {
-      console.log(error);
-      Alert.alert("Error", error);
+      Alert.alert("Error", "Ocurrió un error al crear la boda");
+      logService.addLog(`Error al crear la boda ${error}`);
     } finally {
       setIsSubmitting(false);
-      setEnableSubmit(true);
     }
   };
+
+  useEffect(() => {
+    onAuthStateChanged(getAuth(), (user) => {
+      if (user) {
+        setBoda({ ...boda, usuarioId: user.uid });
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (
@@ -183,7 +184,7 @@ export const HomeCrearBodaScreen = () => {
                   onPress={() => setShowDatePicker(true)}
                 />
               }
-              value={boda?.fechaBoda?.toLocaleDateString()}
+              value={boda?.fechaBoda}
               editable={false}
               onPressIn={() => setShowDatePicker(true)}
             />
@@ -193,7 +194,7 @@ export const HomeCrearBodaScreen = () => {
               presentationStyle="pageSheet"
               visible={showDatePicker}
               onDismiss={onDismiss}
-              date={boda?.fechaBoda}
+              date={new Date()}
               onConfirm={(date) => onConfirm(date as DatePickerResponse)}
               allowEditing={false}
               inputEnabled={false}

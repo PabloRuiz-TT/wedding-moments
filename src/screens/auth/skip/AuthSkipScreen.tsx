@@ -49,6 +49,8 @@ export const AuthSkipScreen = () => {
           },
         ]
       );
+    } else {
+      requestPermissions();
     }
   }, [permission?.status, permission?.granted, permission?.canAskAgain]);
 

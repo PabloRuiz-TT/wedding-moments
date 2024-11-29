@@ -7,6 +7,9 @@ import { RootStackParamList } from "../../../types/navigation.types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Register, useAuthStore } from "../../../store/useAuthStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LogService } from "../../../services/LogService";
+
+const logService = LogService.getInstance();
 
 export const RegisterScreen = () => {
   const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
@@ -28,16 +31,10 @@ export const RegisterScreen = () => {
     setIsSubmitting(true);
     setEnableSubmit(false);
     try {
-      const result = await register(user);
-
-      await AsyncStorage.setItem("user", JSON.stringify(result));
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Main" }],
-      });
+      await register(user);
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      logService.addLog({ error: error.message });
+      Alert.alert("Error", "Hubo un error al registrar tu cuenta");
     } finally {
       setIsSubmitting(false);
       setEnableSubmit(true);

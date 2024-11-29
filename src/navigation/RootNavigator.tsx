@@ -8,6 +8,7 @@ import { HomeCrearBodaScreen } from "../screens/main/home/HomeCrearBodaScreen";
 import { CamaraPermiso } from "../screens/main/album/components/CamaraPermiso";
 import { Platform } from "react-native";
 import { CameraScreen } from "../screens/main/album/CameraScreen";
+import { HomeMapScreen } from "../screens/main/home/HomeMapScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -29,6 +30,11 @@ export const RootNavigator = () => {
       <Stack.Screen name={ROUTES.ROOT.MAIN} component={DrawerNavigator} />
 
       <Stack.Screen name={ROUTES.ROOT.PROFILE} component={ProfileNavigator} />
+
+      <Stack.Screen
+        name={ROUTES.ROOT.HOME_MAP_SCREEN}
+        component={HomeMapScreen}
+      />
 
       <Stack.Group
         screenOptions={{

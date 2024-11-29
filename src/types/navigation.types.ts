@@ -30,6 +30,7 @@ export type RootStackParamList = {
   HomeCrearBoda: undefined;
   CamaraPermiso: undefined;
   CameraScreen: undefined;
+  HomeMapScreen: undefined;
 };
 
 export const ROUTES = {
@@ -41,6 +42,7 @@ export const ROUTES = {
     HOME_CREAR_BODA: "HomeCrearBoda",
     CAMARA_PERMISO: "CamaraPermiso",
     CAMARA_SCREEN: "CameraScreen",
+    HOME_MAP_SCREEN: "HomeMapScreen",
   },
   AUTH: {
     BOARDING: "Boarding",

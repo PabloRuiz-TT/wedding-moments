@@ -1,40 +1,35 @@
 import { ActivityIndicator, Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { HomeEmpty } from "./HomeEmpty";
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BodaState, useBodaStore } from "../../../store/useBodaStore";
+import { Boda, BodaService } from "../../../services/BodaService";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const bodaServicio = BodaService.getInstance();
 
 export const HomeScreen = () => {
-  const [loading, setLoading] = useState(true);
-  const [boda, setBoda] = useState<BodaState>({} as BodaState);
-  const [greet, setGreet] = useState<string>("");
-
-  const { obtenerBodaPorUsuario } = useBodaStore();
+  const [user, setUser] = useState<any | null>(null);
+  const [boda, setBoda] = useState<Boda | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    (async () => {
-      const hora = new Date().getHours();
-
-      if (hora >= 0 && hora < 12) {
-        setGreet("Buenos días");
-      } else if (hora >= 12 && hora < 19) {
-        setGreet("Buenas tardes");
-      } else {
-        setGreet("Buenas noches");
+    onAuthStateChanged(getAuth(), (user) => {
+      if (user) {
+        setUser(user);
       }
+    });
+  }, [user]);
 
-      const userJson = await AsyncStorage.getItem("user");
-
-      const { user } = JSON.parse(userJson || "{}");
-
-      const data = await obtenerBodaPorUsuario(user.uid);
-
-      setBoda(data);
-
-      setLoading(false);
-    })();
-  }, []);
+  useEffect(() => {
+    if (user) {
+      (async () => {
+        const boda = await bodaServicio.obtenerBodaPorUsuarioId(user.uid);
+        setBoda(boda);
+        setLoading(false);
+      })();
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -44,37 +39,37 @@ export const HomeScreen = () => {
     );
   }
 
-  if (boda) {
+  if (!boda) {
     return <HomeEmpty />;
   }
 
-  return (
-    <ScrollView style={{ flex: 1, padding: 12, backgroundColor: "white" }}>
-      <View style={{ gap: 2 }}>
-        <Text
-          style={{
-            fontSize: 42,
-          }}
-        >
-          {greet}
-        </Text>
-        <Text
-          style={{
-            fontSize: 24,
-          }}
-        >
-          Texto
-        </Text>
-      </View>
+  // return (
+  //   <ScrollView style={{ flex: 1, padding: 12, backgroundColor: "white" }}>
+  //     <View style={{ gap: 2 }}>
+  //       <Text
+  //         style={{
+  //           fontSize: 42,
+  //         }}
+  //       >
+  //         {greet}
+  //       </Text>
+  //       <Text
+  //         style={{
+  //           fontSize: 24,
+  //         }}
+  //       >
+  //         Texto
+  //       </Text>
+  //     </View>
 
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          marginTop: 48,
-          gap: 16,
-        }}
-      ></View>
-    </ScrollView>
-  );
+  //     <View
+  //       style={{
+  //         display: "flex",
+  //         flexDirection: "row",
+  //         marginTop: 48,
+  //         gap: 16,
+  //       }}
+  //     ></View>
+  //   </ScrollView>
+  // );
 };

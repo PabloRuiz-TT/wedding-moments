@@ -12,18 +12,11 @@ export const AuthenticationProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Main" }],
-        });
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Auth" }],
-        });
-      }
+      navigation.reset({
+        index: 0,
+        routes: user ? [{ name: "Main" }] : [{ name: "Auth" }],
+      });
     });
-  }, []);
+  }, [navigation]);
   return <>{children}</>;
 };

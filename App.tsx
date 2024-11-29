@@ -4,6 +4,8 @@ import { PaperProvider } from "react-native-paper";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { registerTranslation } from "react-native-paper-dates";
 import { AuthenticationProvider } from "./src/providers/AuthProviders";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 export default function App() {
   registerTranslation("es", {
@@ -32,7 +34,11 @@ export default function App() {
       <PaperProvider>
         <NavigationContainer>
           <AuthenticationProvider>
-            <RootNavigator />
+            <GestureHandlerRootView style={styles.container}>
+              <BottomSheetModalProvider>
+                <RootNavigator />
+              </BottomSheetModalProvider>
+            </GestureHandlerRootView>
           </AuthenticationProvider>
         </NavigationContainer>
       </PaperProvider>
@@ -41,7 +47,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  safeAreaView: {
+  container: {
     flex: 1,
   },
 
