@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import MapView, { Marker, Region } from "react-native-maps";
 import * as Location from "expo-location";
 import {
@@ -8,7 +8,7 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View, Dimensions, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootStackParamList } from "../../../types/navigation.types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -19,84 +19,170 @@ import LottieView from "lottie-react-native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { BodaService } from "../../../services/BodaService";
 
-const SNAP_POINTS = ["20%", "70%"] as const;
+const { width, height } = Dimensions.get("window");
+const SNAP_POINTS = ["25%", "75%"] as const;
+const INITIAL_REGION = {
+  latitude: 0,
+  longitude: 0,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+};
+
+const PRIMARY_COLOR = "#6200ee";
+const BACKGROUND_COLOR = "#ffffff";
 
 const logService = LogService.getInstance();
 const bodaService = BodaService.getInstance();
 
+interface Place {
+  place_id: string;
+  display_name: string;
+  name: string;
+  lat: string;
+  lon: string;
+}
+
+function useDebounce<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  const timeoutRef = useRef<NodeJS.Timeout>();
+
+  return useCallback(
+    (...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    },
+    [callback, delay]
+  );
+}
+
 export const HomeMapScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const animation = useRef<LottieView>(null);
   const mapRef = useRef<MapView>(null);
-  const [region, setRegion] = useState<Region>();
-  const [showAlert, setShowAlert] = useState<boolean>(false);
+
+  const [region, setRegion] = useState<Region>(INITIAL_REGION);
+  const [showAlert, setShowAlert] = useState(false);
+  const [query, setQuery] = useState("");
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [loadPlaces, setLoadPlaces] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [locationPermission, setLocationPermission] = useState(false);
+  const theme = useTheme();
+
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const [sheetIndex, setSheetIndex] = useState(0);
-  const [query, setQuery] = useState<string>("");
-  const [places, setPlaces] = useState<any[]>([]);
-  const [loadPlaces, setLoadPlaces] = useState<boolean>(false);
-  const [userId, setUserId] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const animation = useRef<LottieView>(null);
 
-  const handleSearch = () => {
+  const searchPlaces = async (searchQuery: string) => {
+    if (!searchQuery.trim()) return;
+
     setLoadPlaces(true);
-    const url = `https://nominatim.openstreetmap.org/search?q=${query}&format=json`;
-
-    if (places.length > 0) {
-      setPlaces([]);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchQuery
+        )}&format=json`
+      );
+      const data = await response.json();
+      setPlaces(data);
+    } catch (error) {
+      logService.addLog(`Error al obtener resultados: ${error}`);
+      Alert.alert(
+        "Error",
+        "Error al obtener resultados. Por favor, intente de nuevo."
+      );
+    } finally {
+      setLoadPlaces(false);
     }
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        setPlaces(data);
-      })
-      .catch((error) => {
-        logService.addLog(`Error al buscar lugares ${error}`);
-        console.error(error);
-      })
-      .finally(() => {
-        setLoadPlaces(false);
-      });
   };
 
-  useEffect(() => {
-    bottomSheetRef.current?.present();
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+  const debouncedSearch = useDebounce(searchPlaces, 500);
+
+  const handleLocationPermission = useCallback(async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      setLocationPermission(status === "granted");
 
       if (status !== "granted") {
         setShowAlert(true);
-        return;
+        return false;
       }
+      return true;
+    } catch (error) {
+      logService.addLog(`Error requesting location permission: ${error}`);
+      return false;
+    }
+  }, []);
 
-      let location = await Location.getCurrentPositionAsync({});
+  const getCurrentLocation = useCallback(async () => {
+    try {
+      const hasPermission = await handleLocationPermission();
+      if (!hasPermission) return;
 
-      if (location.coords) {
-        const latitude = location.coords.latitude;
-        const longitude = location.coords.longitude;
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
 
-        const newRegion = {
-          latitude,
-          longitude,
-          latitudeDelta: 0.0092,
-          longitudeDelta: 0.0092,
-        };
+      const newRegion = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0092,
+        longitudeDelta: 0.0092,
+      };
 
-        setRegion(newRegion);
-        mapRef.current?.animateToRegion(newRegion, 1000);
-      }
-    })();
+      setRegion(newRegion);
+      mapRef.current?.animateToRegion(newRegion, 1000);
+    } catch (error) {
+      logService.addLog(`Error getting current location: ${error}`);
+      Alert.alert(
+        "Error",
+        "Ha ocurrido un error al obtener la ubicación actual. Por favor, intente de nuevo."
+      );
+    }
+  }, []);
+
+  const handleSaveLocation = useCallback(async () => {
+    if (!userId || !region) return;
+
+    setLoading(true);
+    try {
+      await bodaService.addUbicacion(region, userId);
+      Alert.alert("Success", "Ubicacion guardada", [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("Main", { screen: "Tabs" }),
+        },
+      ]);
+      bottomSheetRef.current?.forceClose();
+    } catch (error) {
+      logService.addLog(`Error saving location: ${error}`);
+      Alert.alert(
+        "Error",
+        "Ha ocurrido un error al guardar la ubicación. Por favor, intente de nuevo."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [region, userId, navigation]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+      if (user) setUserId(user.uid);
+    });
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
-    onAuthStateChanged(getAuth(), (user) => {
-      if (user) {
-        setUserId(user.uid);
-      }
-    });
-  });
+    bottomSheetRef.current?.present();
+    getCurrentLocation();
+  }, [getCurrentLocation]);
 
   return (
     <>
@@ -105,11 +191,12 @@ export const HomeMapScreen = () => {
           style={styles.map}
           ref={mapRef}
           region={region}
-          mapType="terrain"
+          showsUserLocation
+          showsMyLocationButton={false}
+          onRegionChangeComplete={setRegion}
         >
-          {region && (
+          {region && region.latitude !== 0 && (
             <Marker
-              draggable
               coordinate={{
                 latitude: region.latitude,
                 longitude: region.longitude,
@@ -117,131 +204,98 @@ export const HomeMapScreen = () => {
             />
           )}
         </MapView>
+
         <SafeAreaView style={styles.overlay}>
           <View style={styles.header}>
             <IconButton
-              icon="close"
+              icon="arrow-left"
               containerColor="white"
-              size={32}
-              onPress={() => {
-                navigation.navigate("Main", { screen: "Tabs" });
-                bottomSheetRef.current?.forceClose();
-              }}
+              size={28}
+              onPress={() => navigation.goBack()}
+              style={styles.headerButton}
             />
-
-            <IconButton
-              icon="check"
-              loading={loading}
-              disabled={loading}
-              containerColor="white"
-              size={32}
-              onPress={() => {
-                setLoading(true);
-                bodaService
-                  .addUbicacion(region!, userId)
-                  .then(() => {
-                    Alert.alert(
-                      "Ubicación guardada",
-                      "Hemos guardado tu ubicación correctamente",
-                      [
-                        {
-                          onPress: () =>
-                            navigation.navigate("Main", { screen: "Tabs" }),
-                          text: "Aceptar",
-                        },
-                      ]
-                    );
-
-                    bottomSheetRef.current?.forceClose();
-                  })
-                  .catch((error) => {
-                    logService.addLog(
-                      `Error al guardar ubicación ${error.message}`
-                    );
-                    Alert.alert(
-                      "Error",
-                      `Ocurrió un error al guardar la ubicación ${error}`
-                    );
-                  })
-                  .finally(() => {
-                    setLoading(false);
-                    navigation.navigate("Main", { screen: "Tabs" });
-                  });
-              }}
-            />
+            <View style={styles.headerActions}>
+              <IconButton
+                icon="crosshairs-gps"
+                containerColor="white"
+                size={28}
+                style={styles.headerButton}
+                onPress={getCurrentLocation}
+              />
+              <IconButton
+                icon="check"
+                loading={loading}
+                disabled={loading}
+                containerColor={theme.colors.primary}
+                iconColor="white"
+                size={28}
+                style={[styles.headerButton, styles.saveButton]}
+                onPress={handleSaveLocation}
+              />
+            </View>
           </View>
         </SafeAreaView>
       </View>
 
       <BottomSheetModal
         ref={bottomSheetRef}
-        stackBehavior="push"
-        enableDismissOnClose={false}
-        enablePanDownToClose={false}
-        index={sheetIndex}
         snapPoints={SNAP_POINTS}
-        onChange={setSheetIndex}
+        enablePanDownToClose={false}
+        enableDismissOnClose={false}
+        backgroundStyle={styles.bottomSheetBackground}
+        handleIndicatorStyle={styles.bottomSheetIndicator}
       >
         <BottomSheetScrollView style={styles.bottomSheetView}>
           <Searchbar
-            placeholder="Search"
+            placeholder="Buscar lugar..."
             value={query}
-            onChangeText={(text) => setQuery(text)}
-            onFocus={() => setSheetIndex(1)}
-            onEndEditing={handleSearch}
+            onChangeText={(text) => {
+              setQuery(text);
+              debouncedSearch(text);
+            }}
+            style={styles.searchbar}
+            icon="magnify"
+            clearIcon="close-circle"
             onClearIconPress={() => {
               setQuery("");
               setPlaces([]);
             }}
           />
 
-          {loadPlaces && (
-            <View
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 12,
-              }}
-            >
+          {loadPlaces ? (
+            <View style={styles.loadingContainer}>
               <LottieView
                 autoPlay
                 ref={animation}
-                style={{
-                  marginTop: 36,
-                  marginHorizontal: "auto",
-                  width: 200,
-                  height: 200,
-                }}
+                style={styles.lottieAnimation}
                 source={require("../../../../assets/lottie/maps.json")}
               />
-
-              <Text> Buscando lugares...</Text>
+              <Text style={styles.loadingText}>Buscando lugares...</Text>
             </View>
-          )}
-
-          {places.length > 0 && (
-            <View style={{ marginTop: 16 }}>
+          ) : places.length > 0 ? (
+            <View style={styles.placesContainer}>
               {places.map((place) => (
                 <List.Item
                   key={place.place_id}
                   title={place.display_name}
                   description={place.name}
                   onPress={() => {
-                    setRegion({
+                    const newRegion = {
                       latitude: parseFloat(place.lat),
                       longitude: parseFloat(place.lon),
                       latitudeDelta: 0.0092,
                       longitudeDelta: 0.0092,
-                    });
-
+                    };
+                    setRegion(newRegion);
+                    mapRef.current?.animateToRegion(newRegion, 1000);
                     bottomSheetRef.current?.snapToIndex(0);
+                    Keyboard.dismiss();
                   }}
                   left={(props) => <List.Icon {...props} icon="map-marker" />}
                 />
               ))}
             </View>
-          )}
+          ) : null}
         </BottomSheetScrollView>
       </BottomSheetModal>
     </>
@@ -251,9 +305,12 @@ export const HomeMapScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: BACKGROUND_COLOR,
   },
   map: {
     flex: 1,
+    width,
+    height,
   },
   overlay: {
     position: "absolute",
@@ -262,16 +319,63 @@ const styles = StyleSheet.create({
     right: 0,
   },
   header: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 12,
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerButton: {
+    margin: 4,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  saveButton: {
+    marginLeft: 8,
   },
   bottomSheetView: {
     flex: 1,
     padding: 16,
   },
   bottomSheetBackground: {
-    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+  },
+  bottomSheetIndicator: {
+    backgroundColor: "#757575",
+    width: 40,
+  },
+  searchbar: {
+    elevation: 2,
+    backgroundColor: BACKGROUND_COLOR,
+    borderRadius: 8,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 20,
+  },
+  lottieAnimation: {
+    width: 200,
+    height: 200,
+  },
+  loadingText: {
+    marginTop: 8,
+    color: PRIMARY_COLOR,
+    fontSize: 16,
+  },
+  placesContainer: {
+    marginTop: 16,
   },
 });

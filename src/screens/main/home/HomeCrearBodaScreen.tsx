@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Platform, ScrollView, View } from "react-native";
+import { Platform, ScrollView, View } from "react-native";
 import { Appbar, HelperText, Text, TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -17,6 +17,8 @@ export const HomeCrearBodaScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>("");
+
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   type DatePickerResponse = {
@@ -26,12 +28,10 @@ export const HomeCrearBodaScreen = () => {
 
   const [boda, setBoda] = useState<Boda>({
     titulo: "Mi boda",
-    mensaje: "¡Estamos muy felices de compartir este día contigo!",
+    mensaje: "¡Hola! Te invito a mi boda",
     fechaBoda: "",
-    usuarioId: "",
-    novio: "Novio",
-    novia: "Novia",
-    bodaId: "",
+    novio: "Pedro",
+    novia: "María",
   });
 
   const onConfirm = ({ date }: DatePickerResponse) => {
@@ -49,25 +49,29 @@ export const HomeCrearBodaScreen = () => {
 
   const onSubmit = async () => {
     setIsSubmitting(true);
-    try {
-      await bodaService.crearBoda(boda);
 
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "HomeMapScreen" }],
+    await bodaService
+      .crearBoda(boda, userId)
+      .then(() => {
+        navigation.goBack();
+
+        setTimeout(() => {
+          navigation.navigate("HomeMapScreen");
+        }, 200);
+      })
+      .catch((error) => {
+        logService.addLog(`Error al crear boda: ${error}`);
+        console.log(error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-    } catch (error: any) {
-      Alert.alert("Error", "Ocurrió un error al crear la boda");
-      logService.addLog(`Error al crear la boda ${error}`);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   useEffect(() => {
     onAuthStateChanged(getAuth(), (user) => {
       if (user) {
-        setBoda({ ...boda, usuarioId: user.uid });
+        setUserId(user.uid);
       }
     });
   }, []);

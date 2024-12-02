@@ -19,11 +19,25 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-sqlite", "expo-font", "expo-localization", "expo-camera"]
+    "plugins": [
+      "expo-sqlite",
+      "expo-font",
+      "expo-localization",
+      "expo-camera"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "31664f0d-3646-4d47-b633-44f9d7655f66"
+      }
+    }
   }
 }

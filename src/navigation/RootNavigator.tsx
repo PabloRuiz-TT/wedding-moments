@@ -9,6 +9,7 @@ import { CamaraPermiso } from "../screens/main/album/components/CamaraPermiso";
 import { Platform } from "react-native";
 import { CameraScreen } from "../screens/main/album/CameraScreen";
 import { HomeMapScreen } from "../screens/main/home/HomeMapScreen";
+import { ItinearioCrearScreen } from "../screens/main/itinerario/ItinearioCrearScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -46,6 +47,11 @@ export const RootNavigator = () => {
         <Stack.Screen
           name={ROUTES.ROOT.HOME_CREAR_BODA}
           component={HomeCrearBodaScreen}
+        />
+
+        <Stack.Screen
+          name={ROUTES.ROOT.ITINERARIO_CREAR}
+          component={ItinearioCrearScreen}
         />
 
         <Stack.Screen

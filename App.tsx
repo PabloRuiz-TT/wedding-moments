@@ -6,6 +6,7 @@ import { registerTranslation } from "react-native-paper-dates";
 import { AuthenticationProvider } from "./src/providers/AuthProviders";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { HomeProvider } from "./src/providers/HomeProvider";
 
 export default function App() {
   registerTranslation("es", {
@@ -34,11 +35,13 @@ export default function App() {
       <PaperProvider>
         <NavigationContainer>
           <AuthenticationProvider>
-            <GestureHandlerRootView style={styles.container}>
-              <BottomSheetModalProvider>
-                <RootNavigator />
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
+            <HomeProvider>
+              <GestureHandlerRootView style={styles.container}>
+                <BottomSheetModalProvider>
+                  <RootNavigator />
+                </BottomSheetModalProvider>
+              </GestureHandlerRootView>
+            </HomeProvider>
           </AuthenticationProvider>
         </NavigationContainer>
       </PaperProvider>

@@ -11,11 +11,9 @@ import { db } from "../database/firebase";
 import { Region } from "react-native-maps";
 
 export type Boda = {
-  bodaId: string;
   titulo: string;
   mensaje: string;
   fechaBoda: string;
-  usuarioId: string;
   novio: string;
   novia: string;
 };
@@ -32,12 +30,10 @@ export class BodaService {
     return BodaService.instance;
   }
 
-  public async crearBoda(boda: Boda) {
+  public async crearBoda(boda: Boda, userId: string) {
     try {
-      const docRef = doc(db, "bodas", boda.usuarioId);
-
+      const docRef = doc(db, "bodas", userId);
       await setDoc(docRef, boda, { merge: true });
-
       return docRef.id;
     } catch (error) {
       console.log(error);
@@ -45,7 +41,7 @@ export class BodaService {
     }
   }
 
-  public async obtenerBodaPorUsuarioId(usuarioId: string) {
+  public async obtenerBodaPorUsuario(usuarioId: string) {
     try {
       const docRef = doc(db, "bodas", usuarioId);
 
