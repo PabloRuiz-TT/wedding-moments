@@ -1,0 +1,45 @@
+name: CI Pipeline
+
+# Evento que dispara el pipeline
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Clonar el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Paso 2: Configurar Node.js (ajusta según tu proyecto)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Paso 3: Instalar dependencias
+      - name: Install dependencies
+        run: npm install
+
+      # Paso 4: Ejecutar pruebas
+      - name: Run Tests
+        run: npm test
+
+      # Paso 5: Compilar el proyecto
+      - name: Build Project
+        run: npm run build
+
+      # Paso 6: Notificación de resultados
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1.23.0
+          with:
+            payload: '{"text":"El pipeline se ha ejecutado exitosamente."}'
+        env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
