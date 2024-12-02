@@ -13,6 +13,7 @@ import { useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { HomeCrearBodaScreen } from "../screens/main/home/HomeCrearBodaScreen";
+import EventosScreen from "../screens/Eventos/EventosScreen";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
@@ -83,7 +84,7 @@ export const DrawerNavigator = () => {
       />
       <Drawer.Screen
         name={ROUTES.MAIN.Eventos}
-        component={() => <Text>Eventos</Text>}
+        component={EventosScreen}
         options={{
           title: "Eventos",
           drawerIcon: () => <Icon source="party-popper" size={ICON_SIZE} />,
