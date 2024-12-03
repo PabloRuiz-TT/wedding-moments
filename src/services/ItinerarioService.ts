@@ -12,10 +12,8 @@ import { db } from "../database/firebase";
 export type Itinerario = {
   titulo: string;
   description: string;
-  horaInicio: number;
-  minutoInicio: number;
-  horaFin: number;
-  minutoFin: number;
+  hora: number;
+  minuto: number;
 };
 
 export class ItinerarioService {
@@ -46,6 +44,8 @@ export class ItinerarioService {
 
   public async obtenerItinerariosPorUsuario(usuarioId: string) {
     try {
+      const itinerarios: Itinerario[] = [];
+
       const querySnapshot = await getDocs(
         query(
           collection(db, "itinerarios"),
@@ -53,16 +53,12 @@ export class ItinerarioService {
         )
       );
 
-      const itinerarios: Itinerario[] = [];
-
       querySnapshot.forEach((doc) => {
         itinerarios.push({
           titulo: doc.data().titulo,
           description: doc.data().description,
-          horaInicio: doc.data().horaInicio,
-          minutoInicio: doc.data().minutoInicio,
-          horaFin: doc.data().horaFin,
-          minutoFin: doc.data().minutoFin,
+          hora: doc.data().hora,
+          minuto: doc.data().minuto,
         });
       });
 

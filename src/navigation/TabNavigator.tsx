@@ -20,12 +20,7 @@ export const TABS_ROUTES: BaseRoute[] = [
     focusedIcon: "map",
     unfocusedIcon: "map-outline",
   },
-  {
-    key: "regalos",
-    title: "Regalos",
-    focusedIcon: "gift",
-    unfocusedIcon: "gift-outline",
-  },
+
   {
     key: "album",
     title: "Álbum",
@@ -40,7 +35,6 @@ export const TabNavigator = () => {
   const renderScene = BottomNavigation.SceneMap({
     home: () => <HomeScreen />,
     itinerario: () => <ItinerarioScreen />,
-    regalos: () => <RegalosScreen />,
     album: () => <AlbumScreen />,
   });
 
@@ -49,6 +43,7 @@ export const TabNavigator = () => {
       <StatusBar hidden />
       <BottomNavigation
         navigationState={{ index, routes: TABS_ROUTES }}
+        keyboardHidesNavigationBar
         onIndexChange={setIndex}
         renderScene={renderScene}
         getLabelText={({ route }) => route.title}

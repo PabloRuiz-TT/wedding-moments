@@ -1,19 +1,19 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Platform } from "react-native";
-import { Appbar, Text, TextInput } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useState } from "react";
 import { RootStackParamList } from "../../../types/navigation.types";
 import {
   Itinerario,
   ItinerarioService,
 } from "../../../services/ItinerarioService";
-import { View } from "moti";
-import { TimePickerModal } from "react-native-paper-dates";
-import { SubmitComponent } from "../../auth/components/SubmitComponent";
 import { LogService } from "../../../services/LogService";
+import { ImageBackground } from "expo-image";
+import { Appbar, Text, TextInput, useTheme } from "react-native-paper";
+import { Alert, Keyboard, Platform, ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { SubmitComponent } from "../../auth/components/SubmitComponent";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { TimePickerModal } from "react-native-paper-dates";
 
 const itineraryService = ItinerarioService.getInstance();
 const logService = LogService.getInstance();
@@ -22,68 +22,12 @@ export const ItinearioCrearScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [itinerario, setItinerario] = useState<Itinerario>({} as Itinerario);
-  const [showTimeInicio, setShowTimeInicio] = useState<boolean>(false);
-  const [showTimeFin, setShowTimeFin] = useState<boolean>(false);
+  const { colors } = useTheme();
   const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [itirary, setItinerary] = useState<Itinerario>({} as Itinerario);
   const [userId, setUserId] = useState<string>("");
-
-  const onConfirm = useCallback(
-    ({ hours, minutes }: any) => {
-      setShowTimeInicio(false);
-      setItinerario({
-        ...itinerario,
-        horaInicio: hours,
-        minutoInicio: minutes,
-      });
-    },
-    [showTimeInicio]
-  );
-
-  const onConfirm2 = useCallback(
-    ({ hours, minutes }: any) => {
-      setShowTimeFin(false);
-      setItinerario({
-        ...itinerario,
-        horaFin: hours,
-        minutoFin: minutes,
-      });
-    },
-    [showTimeInicio]
-  );
-
-  const onSubmit = async () => {
-    setIsSubmitting(true);
-    setEnableSubmit(false);
-    try {
-      await itineraryService.crearItinerario(itinerario, userId);
-
-      navigation.goBack();
-    } catch (error: any) {
-      logService.addLog(
-        `Ha ocurrido un error al crear el itinerario: ${error}`
-      );
-      Alert.alert("Error", "Ocurrió un error al crear el itinerario");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  useEffect(() => {
-    if (
-      itinerario.titulo &&
-      itinerario.description &&
-      itinerario.horaInicio &&
-      itinerario.minutoInicio &&
-      itinerario.horaFin &&
-      itinerario.minutoFin
-    ) {
-      setEnableSubmit(true);
-    } else {
-      setEnableSubmit(false);
-    }
-  }, [itinerario]);
+  const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
 
   useEffect(() => {
     onAuthStateChanged(getAuth(), (user) => {
@@ -93,90 +37,133 @@ export const ItinearioCrearScreen = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (itirary.titulo && itirary.description) {
+      setEnableSubmit(true);
+    } else {
+      setEnableSubmit(false);
+    }
+  }, [itirary]);
+
+  const onSubmit = () => {
+    setIsSubmitting(true);
+    setEnableSubmit(false);
+
+    itineraryService
+      .crearItinerario(itirary, userId)
+      .then(() => {
+        Alert.alert("Itinerario creado", "El itinerario ha sido creado.", [
+          {
+            text: "OK",
+            onPress: () => navigation.goBack(),
+          },
+        ]);
+      })
+      .catch((error) => {
+        logService.addLog(`Ha ocurrido un error: ${error}`);
+
+        Alert.alert("Error", "Ocurrió un error al crear el itinerario.");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        setEnableSubmit(true);
+      });
+  };
+
   return (
-    <>
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        padding: Platform.OS === "android" ? 0 : 24,
+      }}
+    >
       {Platform.OS === "android" ? (
-        <Appbar.Header style={{ backgroundColor: "white" }}>
+        <Appbar.Header>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
-          <Appbar.Content title="Crear itinerario" />
+          <Appbar.Content title="Crear Itinerario" />
         </Appbar.Header>
       ) : (
-        <Text style={{ fontSize: 36, margin: 12 }}>Nuevo Itinerario</Text>
+        <View style={{ gap: 8 }}>
+          <Text
+            style={{
+              fontSize: 32,
+              fontWeight: 300,
+            }}
+          >
+            Crear Itinerario
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: 300,
+            }}
+          >
+            Crea un itinerario para tu evento y comparte con tus invitados los
+            detalles de tu boda.
+          </Text>
+        </View>
       )}
 
-      <SafeAreaView style={{ flex: 1, paddingHorizontal: 16 }}>
-        <View style={{ gap: 12 }}>
-          <TextInput
-            value={itinerario.titulo}
-            label={"Título"}
-            onChangeText={(text) =>
-              setItinerario({ ...itinerario, titulo: text })
-            }
-            style={{ backgroundColor: "white" }}
-            left={<TextInput.Icon icon="pencil-outline" />}
-          />
+      <View style={{ marginTop: 24, gap: 12 }}>
+        <TextInput
+          placeholder="Nombre de la actividad"
+          value={itirary.titulo}
+          onChangeText={(text) => setItinerary({ ...itirary, titulo: text })}
+          left={<TextInput.Icon icon="pencil-box-multiple-outline" />}
+          style={{ backgroundColor: colors.surface }}
+        />
 
-          <TextInput
-            value={itinerario.description}
-            label={"Descripción"}
-            onChangeText={(text) =>
-              setItinerario({ ...itinerario, description: text })
-            }
-            style={{ backgroundColor: "white" }}
-            left={<TextInput.Icon icon="note-outline" />}
-          />
+        <TextInput
+          placeholder="Descripción"
+          value={itirary.description}
+          onChangeText={(text) =>
+            setItinerary({ ...itirary, description: text })
+          }
+          left={<TextInput.Icon icon="text-box-outline" />}
+          style={{ backgroundColor: colors.surface, marginTop: 8 }}
+        />
 
-          <View>
-            <TextInput
-              value={`${itinerario.horaInicio ?? 12}:${
-                itinerario.minutoInicio ?? 0
-              }`}
-              onPressIn={() => setShowTimeInicio(true)}
-              style={{ backgroundColor: "white" }}
-              left={<TextInput.Icon icon="clock-fast" />}
-            />
-            <TimePickerModal
-              visible={showTimeInicio}
-              hours={itinerario ? itinerario.horaInicio : 0}
-              minutes={itinerario ? itinerario.minutoInicio : 0}
-              onDismiss={() => {
-                setShowTimeInicio(false);
-              }}
-              onConfirm={onConfirm}
-              animationType="fade"
-              defaultInputType="picker"
-            />
-          </View>
+        <TextInput
+          value={
+            itirary.hora && itirary.minuto
+              ? `${itirary.hora}:${itirary.minuto}`
+              : ""
+          }
+          placeholder="Hora de la actividad"
+          left={<TextInput.Icon icon="clock-outline" />}
+          style={{ backgroundColor: colors.surface, marginTop: 8 }}
+          onFocus={() => {
+            setShowTimePicker(true);
+            Keyboard.dismiss();
+          }}
+        />
 
-          <View>
-            <TextInput
-              value={`${itinerario.horaFin ?? 12}:${itinerario.minutoFin ?? 0}`}
-              onPressIn={() => setShowTimeFin(true)}
-              style={{ backgroundColor: "white" }}
-              left={<TextInput.Icon icon="clock-check-outline" />}
-            />
-            <TimePickerModal
-              visible={showTimeFin}
-              hours={itinerario ? itinerario.horaFin : 0}
-              minutes={itinerario ? itinerario.minutoFin : 0}
-              onDismiss={() => {
-                setShowTimeFin(false);
-              }}
-              onConfirm={onConfirm2}
-              animationType="fade"
-              defaultInputType="picker"
-            />
-          </View>
+        <TimePickerModal
+          visible={showTimePicker}
+          onDismiss={() => setShowTimePicker(false)}
+          onConfirm={(time) => {
+            const { hours, minutes } = time;
 
-          <SubmitComponent
-            onPress={onSubmit}
-            loading={isSubmitting}
-            submitEnabled={!enableSubmit}
-            mainText="Crear itinerario"
-            secondaryText="Creando itinerario..."
-          />
-        </View>
-      </SafeAreaView>
-    </>
+            setItinerary({
+              ...itirary,
+              hora: hours,
+              minuto: minutes,
+            });
+
+            setShowTimePicker(false);
+          }}
+        />
+
+        <SubmitComponent
+          onPress={onSubmit}
+          loading={isSubmitting}
+          submitEnabled={!enableSubmit}
+          mainText="Crear Itinerario"
+          secondaryText="Creando itinerario..."
+        />
+      </View>
+    </ScrollView>
   );
 };

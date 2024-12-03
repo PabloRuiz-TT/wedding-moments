@@ -1,5 +1,5 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { KeyboardAvoidingView, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { registerTranslation } from "react-native-paper-dates";
@@ -7,6 +7,7 @@ import { AuthenticationProvider } from "./src/providers/AuthProviders";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { HomeProvider } from "./src/providers/HomeProvider";
+import { ItinerarioProvider } from "./src/providers/ItinerarioProvider";
 
 export default function App() {
   registerTranslation("es", {
@@ -31,16 +32,21 @@ export default function App() {
   });
 
   return (
-    <KeyboardAvoidingView style={styles.keyboardAvoidingView}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={styles.keyboardAvoidingView}
+    >
       <PaperProvider>
         <NavigationContainer>
           <AuthenticationProvider>
             <HomeProvider>
-              <GestureHandlerRootView style={styles.container}>
-                <BottomSheetModalProvider>
-                  <RootNavigator />
-                </BottomSheetModalProvider>
-              </GestureHandlerRootView>
+              <ItinerarioProvider>
+                <GestureHandlerRootView style={styles.container}>
+                  <BottomSheetModalProvider>
+                    <RootNavigator />
+                  </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+              </ItinerarioProvider>
             </HomeProvider>
           </AuthenticationProvider>
         </NavigationContainer>
