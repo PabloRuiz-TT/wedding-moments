@@ -70,4 +70,24 @@ export class BodaService {
       throw error;
     }
   }
+
+  public async obtenerBodaPorCode(code: string) {
+    try {
+      const bodas = collection(db, "bodas");
+      const q = await getDocs(bodas);
+      let boda: Boda | null = null;
+
+      q.forEach((doc) => {
+        const data = doc.data();
+        if (data.code === code) {
+          boda = data as Boda;
+        }
+      });
+
+      return boda;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }

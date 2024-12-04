@@ -27,11 +27,11 @@ export const HomeCrearBodaScreen = () => {
   };
 
   const [boda, setBoda] = useState<Boda>({
-    titulo: "Mi boda",
-    mensaje: "¡Hola! Te invito a mi boda",
+    titulo: "",
+    mensaje: "",
     fechaBoda: "",
-    novio: "Pedro",
-    novia: "María",
+    novio: "",
+    novia: "",
   });
 
   const onConfirm = ({ date }: DatePickerResponse) => {

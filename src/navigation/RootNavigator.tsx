@@ -7,7 +7,7 @@ import { ProfileNavigator } from "./ProfileNavigator";
 import { HomeCrearBodaScreen } from "../screens/main/home/HomeCrearBodaScreen";
 import { CamaraPermiso } from "../screens/main/album/components/CamaraPermiso";
 import { Platform } from "react-native";
-import { CameraScreen } from "../screens/main/album/CameraScreen";
+import { CameraScreen } from "../components/CameraScreen";
 import { HomeMapScreen } from "../screens/main/home/HomeMapScreen";
 import { ItinearioCrearScreen } from "../screens/main/itinerario/ItinearioCrearScreen";
 import { TabInvitadoNavigator } from "./TabInvitadoNavigator";
@@ -30,6 +30,8 @@ export const RootNavigator = () => {
       <Stack.Screen name={ROUTES.ROOT.AUTH} component={AuthNavigator} />
 
       <Stack.Screen name={ROUTES.ROOT.MAIN} component={DrawerNavigator} />
+
+      <Stack.Screen name={ROUTES.ROOT.CAMARA_SCREEN} component={CameraScreen} />
 
       <Stack.Screen
         name={ROUTES.ROOT.MAIN_INVITADO}
@@ -63,11 +65,6 @@ export const RootNavigator = () => {
         <Stack.Screen
           name={ROUTES.ROOT.CAMARA_PERMISO}
           component={CamaraPermiso}
-        />
-
-        <Stack.Screen
-          name={ROUTES.ROOT.CAMARA_SCREEN}
-          component={CameraScreen}
         />
       </Stack.Group>
     </Stack.Navigator>

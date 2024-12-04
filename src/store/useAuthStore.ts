@@ -27,7 +27,7 @@ export type UserCreate = {
 
 type AuthActions = {
   login: (email: string, password: string) => Promise<UserCredential | null>;
-  register: (data: any, isAnonimous: boolean) => Promise<UserCredential | null>;
+  register: (data: any, isAnonimous: boolean) => Promise<any | null>;
 };
 
 const logService = LogService.getInstance();
@@ -50,48 +50,32 @@ export const useAuthStore = create<AuthActions>()((set, get) => ({
 
   register: async (data: any, isAnonimous = false) => {
     let userCredential = null;
+    let user;
 
-    try {
-      userCredential = await createUserWithEmailAndPassword(
-        firebase,
-        data.email,
-        data.password
-      );
-
-      let user = {};
-
-      if (isAnonimous) {
-        user = {
-          userId: userCredential.user.uid,
-          nombre: data.fullName,
-          rol: data.rol,
-        };
-      } else {
-        user = {
-          userId: userCredential.user.uid,
-          nombre: data.nombre,
-          apellido: data.apellido,
-          telefono: data.telefono,
-          rol: "admin",
-        };
-      }
-
-      try {
-        await addDoc(collection(db, "users"), user);
-
-        return userCredential;
-      } catch (error: any) {
-        if (userCredential?.user) {
-          await userCredential.user.delete();
+    createUserWithEmailAndPassword(firebase, data.email, data.password)
+      .then(async (response) => {
+        if (!isAnonimous) {
+          user = {
+            userId: response.user.uid,
+            nombre: data.nombre,
+            apellido: data.apellido,
+            telefono: data.telefono,
+            rol: "admin",
+          };
+        } else {
+          user = {
+            userId: response.user.uid,
+            nombre: data.fullName,
+            rol: data.rol,
+          };
         }
 
-        logService.addLog({ error: error });
+        await addDoc(collection(db, "users"), user);
+      })
+      .catch((error) => {
+        console.log(error);
         throw error;
-      }
-      return userCredential;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+      });
+    return user;
   },
 }));
