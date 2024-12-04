@@ -16,6 +16,10 @@ export type Boda = {
   fechaBoda: string;
   novio: string;
   novia: string;
+  longitude?: number;
+  latitude?: number;
+  latitudeDelta?: number;
+  longitudeDelta?: number;
 };
 
 export class BodaService {
