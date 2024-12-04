@@ -15,6 +15,10 @@ export type DrawerParamList = {
   QRCode: undefined;
 };
 
+export type MainInvitadoParamList = {
+  Tabs: undefined;
+};
+
 export type ProfileStackParamList = {
   Profile: undefined;
   ProfileEdit: undefined;
@@ -26,6 +30,7 @@ export type RootStackParamList = {
   Loading: undefined;
   Auth: NavigatorScreenParams<AuthStackParamList>;
   Main: NavigatorScreenParams<DrawerParamList>;
+  MainInvitado: NavigatorScreenParams<MainInvitadoParamList>;
   Profile: NavigatorScreenParams<ProfileStackParamList>;
   HomeCrearBoda: undefined;
   CamaraPermiso: undefined;
@@ -39,6 +44,7 @@ export const ROUTES = {
     AUTH: "Auth",
     LOADING: "Loading",
     MAIN: "Main",
+    MAIN_INVITADO: "MainInvitado",
     PROFILE: "Profile",
     HOME_CREAR_BODA: "HomeCrearBoda",
     CAMARA_PERMISO: "CamaraPermiso",

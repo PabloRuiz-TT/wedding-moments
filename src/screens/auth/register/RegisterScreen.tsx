@@ -31,7 +31,7 @@ export const RegisterScreen = () => {
     setIsSubmitting(true);
     setEnableSubmit(false);
     try {
-      await register(user);
+      await register(user, false);
     } catch (error: any) {
       logService.addLog({ error: error.message });
       Alert.alert("Error", "Hubo un error al registrar tu cuenta");

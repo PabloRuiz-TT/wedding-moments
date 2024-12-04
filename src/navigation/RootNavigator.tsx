@@ -10,6 +10,7 @@ import { Platform } from "react-native";
 import { CameraScreen } from "../screens/main/album/CameraScreen";
 import { HomeMapScreen } from "../screens/main/home/HomeMapScreen";
 import { ItinearioCrearScreen } from "../screens/main/itinerario/ItinearioCrearScreen";
+import { TabInvitadoNavigator } from "./TabInvitadoNavigator";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -29,6 +30,11 @@ export const RootNavigator = () => {
       <Stack.Screen name={ROUTES.ROOT.AUTH} component={AuthNavigator} />
 
       <Stack.Screen name={ROUTES.ROOT.MAIN} component={DrawerNavigator} />
+
+      <Stack.Screen
+        name={ROUTES.ROOT.MAIN_INVITADO}
+        component={TabInvitadoNavigator}
+      />
 
       <Stack.Screen name={ROUTES.ROOT.PROFILE} component={ProfileNavigator} />
 

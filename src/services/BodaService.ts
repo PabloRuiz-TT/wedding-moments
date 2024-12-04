@@ -20,6 +20,7 @@ export type Boda = {
   latitude?: number;
   latitudeDelta?: number;
   longitudeDelta?: number;
+  code?: string;
 };
 
 export class BodaService {
@@ -36,6 +37,8 @@ export class BodaService {
 
   public async crearBoda(boda: Boda, userId: string) {
     try {
+      boda.code = boda.novio + boda.novia;
+
       const docRef = doc(db, "bodas", userId);
       await setDoc(docRef, boda, { merge: true });
       return docRef.id;
