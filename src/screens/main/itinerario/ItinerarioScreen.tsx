@@ -25,10 +25,8 @@ export const ItinerarioScreen = () => {
 
   const { obtenerItinerariosPorUsuario, itinerarios } = useItinerario();
 
-  // Estado para el buscador
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Estado para el FAB extendido
   const [isFabExtended, setIsFabExtended] = useState(true);
 
   const onScroll = useCallback((event: any) => {
@@ -36,7 +34,6 @@ export const ItinerarioScreen = () => {
     setIsFabExtended(currentOffset <= 0);
   }, []);
 
-  // Definir renderItem aquí, antes de cualquier retorno
   const renderItem = useCallback(
     ({ item }: { item: Itinerario }) => (
       <ItineraryItem itinerario={item} onPress={() => {}} />
@@ -49,7 +46,6 @@ export const ItinerarioScreen = () => {
       try {
         setScreenState("loading");
         await obtenerItinerariosPorUsuario();
-        // No establecemos screenState aquí
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error desconocido");
         setScreenState("error");
@@ -59,7 +55,6 @@ export const ItinerarioScreen = () => {
     loadData();
   }, [obtenerItinerariosPorUsuario]);
 
-  // Actualizar screenState cuando itinerarios cambia
   useEffect(() => {
     if (itinerarios && itinerarios.length > 0) {
       setScreenState("data");
@@ -68,7 +63,6 @@ export const ItinerarioScreen = () => {
     }
   }, [itinerarios]);
 
-  // Efecto para cargar datos cuando la pantalla obtiene el foco
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       obtenerItinerariosPorUsuario();
@@ -77,7 +71,6 @@ export const ItinerarioScreen = () => {
     return unsubscribe;
   }, [navigation]);
 
-  // Filtrar itinerarios utilizando useMemo
   const filteredItinerarios = useMemo(() => {
     const query = searchQuery.toLowerCase();
     return itinerarios.filter((itinerario) => {
@@ -88,7 +81,6 @@ export const ItinerarioScreen = () => {
     });
   }, [itinerarios, searchQuery]);
 
-  // Aseguramos que todos los hooks se han llamado antes de cualquier retorno
   if (screenState === "loading") {
     return <LoadingScreen />;
   }
@@ -165,9 +157,21 @@ const ItineraryItem: React.FC<ItineraryItemProps> = React.memo(
         onPress={onPress}
         activeOpacity={0.7}
       >
-        <View style={styles.itemContent}>
-          <Text style={styles.itemTitle}>{itinerario.titulo}</Text>
-          <Text style={styles.itemDescription}>{itinerario.description}</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View>
+            <Text style={styles.itemTitle}>{itinerario.titulo}</Text>
+            <Text style={styles.itemDescription}>{itinerario.description}</Text>
+          </View>
+          <Text
+            style={{
+              color: colors.backdrop,
+              fontSize: 14,
+            }}
+          >
+            {itinerario.hora > 12
+              ? `${itinerario.hora - 12}:${itinerario.minuto} PM`
+              : `${itinerario.hora}:${itinerario.minuto} AM`}
+          </Text>
         </View>
       </TouchableOpacity>
     );
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 16,
-    paddingBottom: 80, // Espacio para el FAB
+    paddingBottom: 80,
   },
   itemContainer: {
     paddingVertical: 16,

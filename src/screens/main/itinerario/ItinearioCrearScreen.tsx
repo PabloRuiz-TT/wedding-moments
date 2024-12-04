@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SubmitComponent } from "../../auth/components/SubmitComponent";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { TimePickerModal } from "react-native-paper-dates";
+import * as Notifications from "expo-notifications";
 
 const itineraryService = ItinerarioService.getInstance();
 const logService = LogService.getInstance();
@@ -45,6 +46,19 @@ export const ItinearioCrearScreen = () => {
     }
   }, [itirary]);
 
+  const enviarNotificacion = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Actividad nueva",
+        body: "Hemos notificado a tus invitados sobre la nueva actividad.",
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 2,
+      },
+    });
+  };
+
   const onSubmit = () => {
     setIsSubmitting(true);
     setEnableSubmit(false);
@@ -52,12 +66,9 @@ export const ItinearioCrearScreen = () => {
     itineraryService
       .crearItinerario(itirary, userId)
       .then(() => {
-        Alert.alert("Itinerario creado", "El itinerario ha sido creado.", [
-          {
-            text: "OK",
-            onPress: () => navigation.goBack(),
-          },
-        ]);
+        logService.addLog("Itinerario creado correctamente.");
+        enviarNotificacion();
+        navigation.goBack();
       })
       .catch((error) => {
         logService.addLog(`Ha ocurrido un error: ${error}`);

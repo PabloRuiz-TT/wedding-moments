@@ -8,6 +8,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { HomeProvider } from "./src/providers/HomeProvider";
 import { ItinerarioProvider } from "./src/providers/ItinerarioProvider";
+import * as Notifications from "expo-notifications";
+import { registerForPushNotificationsAsync } from "./src/utils/helpers/NotificacionUtil";
+import { useEffect, useRef, useState } from "react";
 
 export default function App() {
   registerTranslation("es", {
@@ -30,6 +33,34 @@ export default function App() {
     hour: "",
     minute: "",
   });
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState<any>();
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
+      .then((token) => setExpoPushToken(token!))
+      .catch((err) => console.log("Error al registrar notificaciones:", err));
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log("Notificación tocada:", response);
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current!
+      );
+      Notifications.removeNotificationSubscription(responseListener.current!);
+    };
+  }, []);
 
   return (
     <KeyboardAvoidingView
