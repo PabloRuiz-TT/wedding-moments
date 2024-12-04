@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { BottomNavigation, Text } from "react-native-paper";
 import { BaseRoute } from "react-native-paper/lib/typescript/components/BottomNavigation/BottomNavigation";
-import HomeScreen  from "../../screens/ui/main/home/HomeScreen";
+import HomeScreen from "../../screens/ui/main/home/HomeScreen";
+import PagePrimary from "../../screens/ui/main/home/PagePrimary"
 import { ItinerarioScreen } from "../../screens/ui/main/itinerario/ItinerarioScreen";
 import { RegalosScreen } from "../../screens/ui/main/regalos/RegalosScreen";
 import { AlbumScreen } from "../../screens/ui/main/album/AlbumScreen";

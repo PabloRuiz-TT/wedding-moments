@@ -21,19 +21,19 @@ type ImageItem = {
 
 // Array de imágenes para la galería
 const galleryImages: ImageItem[] = [
-	{ id: '1', uri: 'https://acortar.link/nrnzhs', width: 150, height: 200 },
-	{ id: '2', uri: 'https://acortar.link/BjChHv', width: 200, height: 300 },
-	{ id: '3', uri: 'https://acortar.link/5vCBkN', width: 150, height: 300 },
-	{ id: '4', uri: 'https://acortar.link/qmLLX6', width: 200, height: 200 },
-	{ id: '5', uri: 'https://acortar.link/xMzUvZ', width: 150, height: 200 },
-	{ id: '6', uri: 'https://acortar.link/OXmcT0', width: 200, height: 300 },
+	{ id: '1', uri: 'https://example.com/photo1.jpg', width: 150, height: 200 },
+	{ id: '2', uri: 'https://example.com/photo2.jpg', width: 200, height: 150 },
+	{ id: '3', uri: 'https://example.com/photo3.jpg', width: 150, height: 150 },
+	{ id: '4', uri: 'https://example.com/photo4.jpg', width: 200, height: 200 },
+	{ id: '5', uri: 'https://example.com/photo5.jpg', width: 150, height: 200 },
+	{ id: '6', uri: 'https://example.com/photo6.jpg', width: 200, height: 150 },
 ];
 
 const images: ImageItem[] = [
-	{ id: '1', uri: 'https://acortar.link/nrnzhs' },
-	{ id: '2', uri: 'https://acortar.link/BjChHv' },
-	{ id: '3', uri: 'https://acortar.link/5vCBkN' },
-	{ id: '4', uri: 'https://acortar.link/qmLLX6' },
+	{ id: '1', uri: 'https://example.com/photo1.jpg' },
+	{ id: '2', uri: 'https://example.com/photo2.jpg' },
+	{ id: '3', uri: 'https://example.com/photo3.jpg' },
+	{ id: '4', uri: 'https://example.com/photo4.jpg' },
 ];
 
 const HomeScreen = () => {
@@ -53,7 +53,7 @@ const HomeScreen = () => {
 			{/* Header Section */}
 			<View style={styles.header}>
 				<Image
-					source={{ uri: 'https://acortar.link/BjChHv' }}
+					source={{ uri: 'https://example.com/forest.jpg' }}
 					style={styles.headerImage}
 				/>
 				<Text style={styles.headerText}>The Wedding of</Text>
@@ -134,7 +134,7 @@ const HomeScreen = () => {
 				<View style={styles.storyContainer}>
 					<View style={styles.storyCard}>
 						<Image
-							source={{ uri: 'https://acortar.link/7thTpQ' }}
+							source={{ uri: 'https://example.com/groom_story.jpg' }}
 							style={styles.storyImage}
 						/>
 						<Text style={styles.storyText}>
@@ -145,7 +145,7 @@ const HomeScreen = () => {
 					</View>
 					<View style={styles.storyCard}>
 						<Image
-							source={{ uri: 'https://acortar.link/aBdbB7' }}
+							source={{ uri: 'https://example.com/bride_story.jpg' }}
 							style={styles.storyImage}
 						/>
 						<Text style={styles.storyText}>
