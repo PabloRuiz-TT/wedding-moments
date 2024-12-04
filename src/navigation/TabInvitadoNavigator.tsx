@@ -1,26 +1,9 @@
-import React, { useEffect, useState } from "react";
-import {
-  Appbar,
-  Avatar,
-  BottomNavigation,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import React, { useState } from "react";
+import { BottomNavigation, Text } from "react-native-paper";
 import { BaseRoute } from "react-native-paper/lib/typescript/components/BottomNavigation/BottomNavigation";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Boda, BodaService } from "../services/BodaService";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
-import { Skeleton } from "moti/skeleton";
-import { MotiView } from "moti";
-import { LoadingScreen } from "../screens/loading/LoadingScreen";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../types/navigation.types";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../database/firebase";
-import { Image } from "expo-image";
+import { BodaService } from "../services/BodaService";
 import { AlbumInvitadoScreen } from "./screens/AlbumInvitadoScreen";
 
 export const TABS_ROUTES: BaseRoute[] = [

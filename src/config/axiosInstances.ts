@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const weddingAPI = axios.create({
-  baseURL: "http://192.168.0.195:7025/api",
+  baseURL: "http://10.10.63.182:7025/api",
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",

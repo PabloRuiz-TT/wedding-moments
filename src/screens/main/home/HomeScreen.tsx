@@ -249,9 +249,7 @@ export const HomeScreen = () => {
             >
               <View style={styles.textOverlay}>
                 <Text style={styles.weddingTitle}>{bodaData.titulo}</Text>
-                <Text style={styles.weddingDate}>
-                  {new Date(bodaData.fechaBoda).toLocaleDateString()}
-                </Text>
+                <Text style={styles.weddingDate}>{bodaData.fechaBoda}</Text>
                 <Text style={styles.names}>
                   {bodaData.novio} & {bodaData.novia}
                 </Text>
