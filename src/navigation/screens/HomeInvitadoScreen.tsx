@@ -48,7 +48,9 @@ export const HomeInvitadoScreen = () => {
         <Appbar.Action icon="account-circle-outline" />
       </Appbar.Header>
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1 }}>{JSON.stringify(boda)}</ScrollView>
+        <ScrollView style={{ flex: 1 }}>
+          <Text>{JSON.stringify(boda)}</Text>
+        </ScrollView>
       </SafeAreaView>
     </>
   );
