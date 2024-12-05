@@ -11,6 +11,9 @@ import { CameraScreen } from "../components/CameraScreen";
 import { HomeMapScreen } from "../screens/main/home/HomeMapScreen";
 import { ItinearioCrearScreen } from "../screens/main/itinerario/ItinearioCrearScreen";
 import { TabInvitadoNavigator } from "./TabInvitadoNavigator";
+import { AlbumSuggestionScreen } from "../screens/suggestions/AlbumSuggestionScreen";
+import { RegaloSuggestionScreen } from "../screens/suggestions/RegaloSuggestionScreen";
+import { ItinerarioSuggestionScreen } from "../screens/suggestions/ItinerarioSuggestionScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -65,6 +68,21 @@ export const RootNavigator = () => {
         <Stack.Screen
           name={ROUTES.ROOT.CAMARA_PERMISO}
           component={CamaraPermiso}
+        />
+
+        <Stack.Screen
+          name={ROUTES.ROOT.ALBUM_SUGGESTION}
+          component={AlbumSuggestionScreen}
+        />
+
+        <Stack.Screen
+          name={ROUTES.ROOT.REGALOS_SUGGESTION}
+          component={RegaloSuggestionScreen}
+        />
+
+        <Stack.Screen
+          name={ROUTES.ROOT.ITINERARIO_SUGGESTION}
+          component={ItinerarioSuggestionScreen}
         />
       </Stack.Group>
     </Stack.Navigator>
