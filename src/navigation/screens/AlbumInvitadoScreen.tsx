@@ -1,185 +1,95 @@
-import { useEffect, useState } from "react";
-import { ScrollView, View, TouchableOpacity } from "react-native";
-import { Appbar, Avatar, Text, useTheme } from "react-native-paper";
-import { Image } from "expo-image";
-import { MotiView } from "moti";
 import {
   collection,
-  onSnapshot,
-  query,
-  orderBy,
   doc,
+  onSnapshot,
+  orderBy,
+  query,
   updateDoc,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Boda, BodaService } from "../../services/BodaService";
-import { RootStackParamList } from "../../types/navigation.types";
+import { MotiView } from "moti";
+import { useEffect, useState } from "react";
+import { Image, ScrollView, View, TextInput, Keyboard } from "react-native";
+import { Appbar, Avatar, IconButton, Text, Surface } from "react-native-paper";
 import { db } from "../../database/firebase";
 import { LoadingScreen } from "../../screens/loading/LoadingScreen";
-import { Skeleton } from "moti/skeleton";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../types/navigation.types";
 
-const LikeButton = ({ reactions, onLike, isLiked }: any) => {
-  const { colors } = useTheme();
+// Interfaz extendida para incluir comentarios
 
-  return (
-    <MotiView
-      from={{ scale: 1 }}
-      animate={{ scale: isLiked ? [1, 1.2, 1] : 1 }}
-      transition={{ type: "spring", damping: 10 }}
-    >
-      <TouchableOpacity
-        onPress={onLike}
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4,
-          padding: 8,
-        }}
-      >
-        <MaterialCommunityIcons
-          name={isLiked ? "heart" : "heart-outline"}
-          size={24}
-          color={isLiked ? colors.error : colors.onSurfaceVariant}
-        />
-        <Text style={{ color: colors.onSurfaceVariant }}>{reactions || 0}</Text>
-      </TouchableOpacity>
-    </MotiView>
-  );
-};
-
-const ImageCard = ({ item, colors, onLike, likedImages }: any) => {
-  const isLiked = likedImages.includes(item.id);
-
-  return (
-    <MotiView
-      from={{ opacity: 0, translateY: 20 }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "timing", duration: 500 }}
-      style={{
-        width: "100%",
-        marginBottom: 48,
-        padding: 4,
-        backgroundColor: colors.surface,
-        borderRadius: 16,
-        elevation: 3,
-      }}
-    >
-      <View style={{ gap: 8, marginLeft: 8, padding: 8 }}>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <Avatar.Text
-            size={40}
-            label={item.userName.charAt(0)}
-            style={{ backgroundColor: colors.primary }}
-          />
-          <Text
-            variant="labelSmall"
-            style={{ fontSize: 16, fontWeight: "500" }}
-          >
-            {item.userName}
-          </Text>
-        </View>
-
-        <Text style={{ fontSize: 12, color: colors.onSurfaceVariant }}>
-          {item.createdAt}
-        </Text>
-      </View>
-
-      <MotiView
-        from={{ scale: 0.95 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", damping: 15 }}
-      >
-        <Image
-          source={{ uri: item.imageUrl }}
-          style={{
-            width: "100%",
-            height: 450,
-            marginTop: 12,
-            borderRadius: 12,
-            overflow: "hidden",
-          }}
-          contentFit="cover"
-          transition={1000}
-        />
-      </MotiView>
-
-      <View style={{ padding: 12 }}>
-        <LikeButton
-          reactions={item.reactions}
-          onLike={() => onLike(item.id, item.reactions || 0, isLiked)}
-          isLiked={isLiked}
-        />
-      </View>
-    </MotiView>
-  );
-};
+interface Comment {
+  id: string;
+  text: string;
+  userName: string;
+  createdAt: string;
+}
 
 export const AlbumInvitadoScreen = () => {
-  const [boda, setBoda] = useState<Boda | null>({} as Boda);
-  const [user] = useState(getAuth().currentUser);
-  const [loading, setLoading] = useState(true);
-  const [loadingImages, setLoadingImages] = useState(true);
-  const [images, setImages] = useState<any[]>([]);
-  const [likedImages, setLikedImages] = useState<string[]>([]);
-  const { colors } = useTheme();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [images, setImages] = useState<any[]>([]);
+  const [userReactions, setUserReactions] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [loading, setLoading] = useState(true);
 
-  const handleLike = async (
-    imageId: string,
-    currentReactions: number,
-    isLiked: boolean
-  ) => {
+  const [activeCommentSection, setActiveCommentSection] = useState<
+    string | null
+  >(null);
+  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState<{ [key: string]: Comment[] }>({});
+
+  const handleReaction = async (imageId: string) => {
     try {
       const imageRef = doc(db, "album", imageId);
-      const newReactions = isLiked
-        ? currentReactions - 1
-        : currentReactions + 1;
+      const currentImage = images.find((img) => img.id === imageId);
+
+      if (!currentImage) return;
+
+      const hasReacted = userReactions[imageId];
+      const newReactionCount = hasReacted
+        ? currentImage.reactions - 1
+        : currentImage.reactions + 1;
 
       await updateDoc(imageRef, {
-        reactions: newReactions,
+        reactions: newReactionCount,
       });
 
-      setLikedImages((prev) =>
-        isLiked ? prev.filter((id) => id !== imageId) : [...prev, imageId]
-      );
+      setUserReactions((prev) => ({
+        ...prev,
+        [imageId]: !hasReacted,
+      }));
     } catch (error) {
-      console.error("Error al actualizar las reacciones:", error);
+      console.error("Error al actualizar la reacción:", error);
     }
   };
 
-  useEffect(() => {
-    const loadBodaData = async () => {
-      try {
-        const result = await BodaService.getInstance().obtenerBodaPorCode(
-          "VicenteKatherine"
-        );
-        setBoda(result || null);
-      } catch (error) {
-        console.error("Error al cargar la boda:", error);
-      } finally {
-        setLoading(false);
-      }
+  const toggleComments = (imageId: string) => {
+    setActiveCommentSection((prev) => (prev === imageId ? null : imageId));
+    setNewComment("");
+  };
+
+  const handleAddComment = (imageId: string) => {
+    if (!newComment.trim()) return;
+
+    const newCommentObj: Comment = {
+      id: Date.now().toString(),
+      text: newComment,
+      userName: "Usuario",
+      createdAt: new Date().toISOString(),
     };
 
-    loadBodaData();
-  }, []);
+    setComments((prev) => ({
+      ...prev,
+      [imageId]: [...(prev[imageId] || []), newCommentObj],
+    }));
+
+    setNewComment("");
+    Keyboard.dismiss();
+  };
 
   useEffect(() => {
-    if (!user) return;
-
-    setLoadingImages(true);
-
     const albumRef = collection(db, "album");
     const q = query(albumRef, orderBy("createdAt", "desc"));
 
@@ -190,99 +100,188 @@ export const AlbumInvitadoScreen = () => {
           id: doc.id,
           ...doc.data(),
         }));
-
         setImages(updatedImages);
-        setLoadingImages(false);
       },
       (error) => {
         console.error("Error al escuchar cambios en el álbum:", error);
-        setLoadingImages(false);
       }
     );
 
-    const loadLikedImages = async () => {
-      try {
-        setLikedImages([]);
-      } catch (error) {
-        console.error("Error al cargar likes guardados:", error);
-      }
-    };
-
-    loadLikedImages();
+    setLoading(false);
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
   if (loading) {
     return <LoadingScreen />;
   }
 
+  const renderCommentSection = (imageId: string) => {
+    const imageComments = comments[imageId] || [];
+    const isActive = activeCommentSection === imageId;
+
+    return (
+      <MotiView
+        from={{ height: 0, opacity: 0 }}
+        animate={{
+          height: isActive ? "auto" : 0,
+          opacity: isActive ? 1 : 0,
+        }}
+        transition={{
+          type: "timing",
+          duration: 300,
+        }}
+        style={{
+          overflow: "hidden",
+        }}
+      >
+        <Surface
+          mode="flat"
+          style={{ padding: 16, marginTop: 8, borderRadius: 12 }}
+        >
+          {imageComments.map((comment) => (
+            <View
+              key={comment.id}
+              style={{
+                flexDirection: "row",
+                marginBottom: 12,
+                gap: 8,
+              }}
+            >
+              <Avatar.Image
+                source={require("../../../assets/illustrations/profile.jpg")}
+                size={32}
+              />
+              <View style={{ flex: 1 }}>
+                <Text variant="bodySmall" style={{ fontWeight: "bold" }}>
+                  {comment.userName}
+                </Text>
+                <Text variant="bodyMedium">{comment.text}</Text>
+              </View>
+            </View>
+          ))}
+
+          <View style={{ flexDirection: "row", marginTop: 8, gap: 8 }}>
+            <TextInput
+              style={{
+                flex: 1,
+                borderWidth: 1,
+                borderColor: "#e0e0e0",
+                borderRadius: 20,
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+              }}
+              placeholder="Añade un comentario..."
+              value={newComment}
+              onChangeText={setNewComment}
+            />
+            <IconButton
+              icon="send"
+              onPress={() => handleAddComment(imageId)}
+              disabled={!newComment.trim()}
+            />
+          </View>
+        </Surface>
+      </MotiView>
+    );
+  };
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <Appbar.Header style={{ backgroundColor: "transparent" }}>
-        <Appbar.Content title="" />
+    <>
+      <Appbar.Header style={{ backgroundColor: "white" }}>
+        <Appbar.Content title="Álbum Fotográfico" />
         <Appbar.Action
-          icon="video"
-          containerColor={colors.inversePrimary}
-          color={colors.onPrimary}
-          onPress={() => {}}
-        />
-        <Appbar.Action
-          icon="camera"
-          containerColor={colors.inversePrimary}
-          color={colors.onPrimary}
+          icon="camera-outline"
           onPress={() => navigation.navigate("CameraScreen")}
         />
       </Appbar.Header>
+      <ScrollView style={{ flex: 1, backgroundColor: "white", padding: 20 }}>
+        {images.map((item, index) => {
+          const hasReacted = userReactions[item.id] || false;
 
-      <MotiView
-        from={{ opacity: 0, translateY: -20 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring", damping: 15 }}
-        style={{ flex: 1, alignItems: "center" }}
-      >
-        <Avatar.Image
-          size={75}
-          source={require("../../../assets/illustrations/profile.jpg")}
-        />
-        <View style={{ marginTop: 20 }}>
-          <Text
-            style={{
-              fontSize: 28,
-              fontWeight: "600",
-              color: colors.primary,
-            }}
-          >
-            {boda?.novio} & {boda?.novia}
-          </Text>
-        </View>
-      </MotiView>
-
-      <View style={{ padding: 20, marginTop: 24 }}>
-        {loadingImages ? (
-          <Skeleton />
-        ) : images.length > 0 ? (
-          images.map((item) => (
-            <ImageCard
-              key={item.id}
-              item={item}
-              colors={colors}
-              onLike={handleLike}
-              likedImages={likedImages}
-            />
-          ))
-        ) : (
-          <Text
-            style={{
-              textAlign: "center",
-              color: colors.onSurfaceVariant,
-              fontSize: 16,
-            }}
-          >
-            No hay fotos en el álbum aún. ¡Sé el primero en compartir un momento
-            especial!
-          </Text>
-        )}
-      </View>
-    </ScrollView>
+          return (
+            <MotiView
+              from={{ opacity: 0, translateY: 100 }}
+              animate={{
+                opacity: 1,
+                translateY: 0,
+              }}
+              transition={{
+                type: "timing",
+                duration: 500,
+                delay: index * 500,
+              }}
+              key={index}
+              style={{ marginBottom: 24 }}
+            >
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: 8,
+                }}
+              >
+                <Avatar.Image
+                  source={require("../../../assets/illustrations/profile.jpg")}
+                  size={42}
+                />
+                <Text variant="bodySmall" style={{ marginTop: 8 }}>
+                  {item.userName}
+                </Text>
+              </View>
+              <Image
+                source={{ uri: item.imageUrl }}
+                style={{
+                  width: "100%",
+                  height: 300,
+                  borderRadius: 12,
+                  marginTop: 8,
+                }}
+              />
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <IconButton
+                    icon={hasReacted ? "heart" : "heart-outline"}
+                    onPress={() => handleReaction(item.id)}
+                    iconColor={hasReacted ? "#FF4081" : undefined}
+                  />
+                  <Text style={{ marginLeft: -8 }}>{item.reactions || 0}</Text>
+                  <IconButton
+                    icon={
+                      activeCommentSection === item.id
+                        ? "comment"
+                        : "comment-outline"
+                    }
+                    onPress={() => toggleComments(item.id)}
+                    iconColor={
+                      activeCommentSection === item.id ? "#2196F3" : undefined
+                    }
+                  />
+                  <Text style={{ marginLeft: -8 }}>
+                    {(comments[item.id] || []).length}
+                  </Text>
+                </View>
+                <IconButton
+                  icon="share-variant-outline"
+                  style={{ marginLeft: "auto" }}
+                  onPress={() => {}}
+                />
+              </View>
+              {renderCommentSection(item.id)}
+            </MotiView>
+          );
+        })}
+      </ScrollView>
+    </>
   );
 };

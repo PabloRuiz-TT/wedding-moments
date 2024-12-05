@@ -24,6 +24,7 @@ import {
 import { db } from "../../../database/firebase";
 import { getAuth, signInAnonymously } from "firebase/auth";
 import { useAuthStore } from "../../../store/useAuthStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthSkipScreen = () => {
   const navigation =
@@ -209,7 +210,9 @@ export const AuthSkipScreen = () => {
                 };
 
                 register(userAnonymous, true)
-                  .then(() => {})
+                  .then(async () => {
+                    await AsyncStorage.setItem("code", code);
+                  })
                   .catch((error) => {
                     console.log(error);
                     Alert.alert(
