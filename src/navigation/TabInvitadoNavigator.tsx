@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BodaService } from "../services/BodaService";
 import { AlbumInvitadoScreen } from "./screens/AlbumInvitadoScreen";
 import ItinerarioInvitadoScreen from "./screens/ItinerarioInvitadoScreen"; // Ajusta la ruta según tu proyecto
+import { Hoome } from "./screens/HomeInvitadoScreen";
 
 
 export const TABS_ROUTES: BaseRoute[] = [
@@ -63,13 +64,6 @@ const HomeInvitadoScreen = () => {
   );
 };
 
-const HomeInvitadoScreen = () => {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Text>Home Invitado</Text>
-    </SafeAreaView>
-  );
-};
 
 
 
