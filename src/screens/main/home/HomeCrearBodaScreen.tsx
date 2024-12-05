@@ -1,40 +1,41 @@
 import React, { useEffect, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
-import { HelperText, Text, TextInput } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Platform, ScrollView, View } from "react-native";
+import { Appbar, HelperText, Text, TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../types/navigation.types";
 import { SubmitComponent } from "../../auth/components/SubmitComponent";
-import { BodaState, useBodaStore } from "../../../store/useBodaStore";
 import { DatePickerModal } from "react-native-paper-dates";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Boda, BodaService } from "../../../services/BodaService";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { LogService } from "../../../services/LogService";
+
+const bodaService = BodaService.getInstance();
+const logService = LogService.getInstance();
 
 export const HomeCrearBodaScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [enableSubmit, setEnableSubmit] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>("");
+
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  const { crearBoda } = useBodaStore();
-
-  const [boda, setBoda] = useState<BodaState>({
-    titulo: "Mi boda",
-    mensaje: "Hola, te invito a mi boda",
-    novio: "Juan",
-    novia: "Maria",
-    fechaBoda: new Date(),
-    usuarioID: "",
-  });
-
   type DatePickerResponse = {
     date: Date;
     type: "dismissed" | "confirmed";
   };
 
+  const [boda, setBoda] = useState<Boda>({
+    titulo: "",
+    mensaje: "",
+    fechaBoda: "",
+    novio: "",
+    novia: "",
+  });
+
   const onConfirm = ({ date }: DatePickerResponse) => {
-    setBoda({ ...boda, fechaBoda: date });
+    setBoda({ ...boda, fechaBoda: date.toLocaleDateString() });
     setTimeout(() => {
       setShowDatePicker(false);
     }, 0);
@@ -48,29 +49,32 @@ export const HomeCrearBodaScreen = () => {
 
   const onSubmit = async () => {
     setIsSubmitting(true);
-    setEnableSubmit(false);
-    try {
-      const userJson = await AsyncStorage.getItem("user");
 
-      const { user } = JSON.parse(userJson || "{}");
+    await bodaService
+      .crearBoda(boda, userId)
+      .then(() => {
+        navigation.goBack();
 
-      boda.usuarioID = user.uid;
-
-      const result = await crearBoda(boda);
-
-      if (result) {
-        navigation.canGoBack() && navigation.goBack();
-      }
-
-      navigation.navigate("Main", { screen: "Tabs" });
-    } catch (error: any) {
-      console.log(error);
-      Alert.alert("Error", error);
-    } finally {
-      setIsSubmitting(false);
-      setEnableSubmit(true);
-    }
+        setTimeout(() => {
+          navigation.navigate("HomeMapScreen");
+        }, 200);
+      })
+      .catch((error) => {
+        logService.addLog(`Error al crear boda: ${error}`);
+        console.log(error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
+
+  useEffect(() => {
+    onAuthStateChanged(getAuth(), (user) => {
+      if (user) {
+        setUserId(user.uid);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (
@@ -87,8 +91,17 @@ export const HomeCrearBodaScreen = () => {
   }, [boda]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white", padding: 20 }}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+    <>
+      {Platform.OS === "android" ? (
+        <Appbar.Header style={{ backgroundColor: "white" }}>
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title="" />
+        </Appbar.Header>
+      ) : null}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, padding: 20 }}
+      >
         <Text
           style={{
             fontSize: 42,
@@ -175,7 +188,7 @@ export const HomeCrearBodaScreen = () => {
                   onPress={() => setShowDatePicker(true)}
                 />
               }
-              value={boda?.fechaBoda?.toLocaleDateString()}
+              value={boda?.fechaBoda}
               editable={false}
               onPressIn={() => setShowDatePicker(true)}
             />
@@ -185,7 +198,7 @@ export const HomeCrearBodaScreen = () => {
               presentationStyle="pageSheet"
               visible={showDatePicker}
               onDismiss={onDismiss}
-              date={boda?.fechaBoda}
+              date={new Date()}
               onConfirm={(date) => onConfirm(date as DatePickerResponse)}
               allowEditing={false}
               inputEnabled={false}
@@ -202,6 +215,6 @@ export const HomeCrearBodaScreen = () => {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </>
   );
 };

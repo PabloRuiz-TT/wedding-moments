@@ -9,6 +9,8 @@ import {
 } from "firebase/auth";
 import { db } from "../database/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { LogService } from "../services/LogService";
+import { Alert } from "react-native";
 
 export type Register = {
   nombre: string;
@@ -19,31 +21,20 @@ export type Register = {
 };
 
 type AuthState = {
-  user: User | null; // Usuario autenticado
-  token: string | null; // Token JWT del usuario
-  setUser: (user: User | null) => Promise<void>; // Actualiza el estado del usuario
+  user: any | null;
+  token: string | null;
 };
 
 type AuthActions = {
-  login: (email: string, password: string) => Promise<UserCredential | null>; // Inicia sesión
-  register: (data: Register) => Promise<UserCredential | null>; // Registra un nuevo usuario
+  login: (email: string, password: string) => Promise<UserCredential | null>;
+  register: (data: Register) => Promise<UserCredential | null>;
 };
+
+const logService = LogService.getInstance();
 
 export const useAuthStore = create<AuthState & AuthActions>()((set, get) => ({
   user: null,
   token: null,
-
-  // Actualiza el estado del usuario y el token
-  setUser: async (user) => {
-    if (user) {
-      const token = await user.getIdToken();
-      set({ user, token });
-    } else {
-      set({ user: null, token: null });
-    }
-  },
-
-  // Inicia sesión con email y contraseña
   login: async (email: string, password: string) => {
     try {
       const auth = getAuth();
@@ -57,26 +48,21 @@ export const useAuthStore = create<AuthState & AuthActions>()((set, get) => ({
       throw error;
     }
   },
-
-  // Registra un nuevo usuario y guarda sus datos en Firestore
   register: async (data: Register) => {
     try {
-      const auth = getAuth();
       const { email, password } = data;
 
-      const response = await createUserWithEmailAndPassword(auth, email, password);
+      const response = await createUserWithEmailAndPassword(
+        firebase,
+        email,
+        password
+      );
 
-      // Guarda el usuario en Firestore
-      await addDoc(collection(db, "users"), {
-        ...data,
-        uid: response.user.uid,
-      });
+      await addDoc(collection(db, "users"), data);
 
-      // Actualiza el estado del usuario después del registro
-      await get().setUser(response.user);
-      return response;
+      return response.user ? response : null;
     } catch (error) {
-      console.error("Error en register:", error);
+      console.log(error);
       throw error;
     }
   },

@@ -11,25 +11,7 @@ import {
 } from "react-native-paper";
 import { RootStackParamList } from "../../../types/navigation.types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-const servicesImages = [
-  {
-    text: "Fotografía",
-    uri: require("../../../../assets/illustrations/camera.jpeg"),
-  },
-  {
-    text: "Itinerario",
-    uri: require("../../../../assets/illustrations/itinerary.jpeg"),
-  },
-  {
-    text: "Regalos",
-    uri: require("../../../../assets/illustrations/gitf.jpeg"),
-  },
-  {
-    text: "Álbum",
-    uri: require("../../../../assets/illustrations/flowers.jpeg"),
-  },
-];
+import { servicesImages } from "../../../_mocks/services";
 
 export const HomeEmpty = () => {
   const { colors } = useTheme();
@@ -98,37 +80,41 @@ export const HomeEmpty = () => {
 
         <View style={{ marginTop: 48 }}>
           {servicesImages.map((service, index) => (
-            <ImageBackground
+            <TouchableRipple
               key={index}
-              source={service.uri}
-              style={{
-                height: 200,
-                width: "100%",
-                borderRadius: 12,
-                overflow: "hidden",
-                marginBottom: 16,
-              }}
+              onPress={() => navigation.navigate(service.path)}
             >
-              <LinearGradient
-                colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.8)"]}
+              <ImageBackground
+                source={service.uri}
                 style={{
-                  height: "100%",
+                  height: 200,
                   width: "100%",
-                  justifyContent: "flex-end",
-                  padding: 16,
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  marginBottom: 16,
                 }}
               >
-                <Text
+                <LinearGradient
+                  colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.8)"]}
                   style={{
-                    color: "white",
-                    fontSize: 24,
-                    fontFamily: "Quicksand_500Medium",
+                    height: "100%",
+                    width: "100%",
+                    justifyContent: "flex-end",
+                    padding: 16,
                   }}
                 >
-                  {service.text}
-                </Text>
-              </LinearGradient>
-            </ImageBackground>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 24,
+                      fontFamily: "Quicksand_500Medium",
+                    }}
+                  >
+                    {service.text}
+                  </Text>
+                </LinearGradient>
+              </ImageBackground>
+            </TouchableRipple>
           ))}
         </View>
       </ScrollView>

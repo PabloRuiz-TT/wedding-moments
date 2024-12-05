@@ -102,7 +102,11 @@ export const AuthOptionsScreen = ({ navigation }: AuthOptionsScreenProps) => {
               >
                 Crear una cuenta
               </Button>
-              <Button mode="text" textColor="white">
+              <Button
+                onPress={() => navigation.navigate("AuthSkip")}
+                mode="text"
+                textColor="white"
+              >
                 Omitir
               </Button>
             </MotiView>

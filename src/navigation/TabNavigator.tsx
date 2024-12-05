@@ -5,6 +5,7 @@ import { HomeScreen } from "../screens/main/home/HomeScreen";
 import { ItinerarioScreen } from "../screens/main/itinerario/ItinerarioScreen";
 import { RegalosScreen } from "../screens/main/regalos/RegalosScreen";
 import { AlbumScreen } from "../screens/main/album/AlbumScreen";
+import { StatusBar } from "expo-status-bar";
 
 export const TABS_ROUTES: BaseRoute[] = [
   {
@@ -19,12 +20,7 @@ export const TABS_ROUTES: BaseRoute[] = [
     focusedIcon: "map",
     unfocusedIcon: "map-outline",
   },
-  {
-    key: "regalos",
-    title: "Regalos",
-    focusedIcon: "gift",
-    unfocusedIcon: "gift-outline",
-  },
+
   {
     key: "album",
     title: "Álbum",
@@ -39,17 +35,19 @@ export const TabNavigator = () => {
   const renderScene = BottomNavigation.SceneMap({
     home: () => <HomeScreen />,
     itinerario: () => <ItinerarioScreen />,
-    regalos: () => <RegalosScreen />,
     album: () => <AlbumScreen />,
   });
 
   return (
-    <BottomNavigation
-      keyboardHidesNavigationBar={true}
-      navigationState={{ index, routes: TABS_ROUTES }}
-      onIndexChange={setIndex}
-      renderScene={renderScene}
-      getLabelText={({ route }) => route.title}
-    />
+    <>
+      <StatusBar hidden />
+      <BottomNavigation
+        navigationState={{ index, routes: TABS_ROUTES }}
+        keyboardHidesNavigationBar
+        onIndexChange={setIndex}
+        renderScene={renderScene}
+        getLabelText={({ route }) => route.title}
+      />
+    </>
   );
 };

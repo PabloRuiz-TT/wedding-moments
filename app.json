@@ -19,11 +19,43 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.pabloruiz117.weddingmoments"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-sqlite", "expo-font", "expo-localization", "expo-camera"]
+    "plugins": [
+      "expo-sqlite",
+      "expo-font",
+      "expo-localization",
+      "expo-notifications",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioPermission": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Selecct and upload images.",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "31664f0d-3646-4d47-b633-44f9d7655f66"
+      }
+    }
   }
 }

@@ -1,10 +1,11 @@
-import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { ScrollView } from "react-native";
 
 export const RegalosScreen = () => {
   return (
-    <View>
-      <Text>Regalos Screen</Text>
-    </View>
+    <>
+      <ScrollView
+        style={{ flex: 1, padding: 16, backgroundColor: "white" }}
+      ></ScrollView>
+    </>
   );
 };

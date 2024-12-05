@@ -5,6 +5,7 @@ export type AuthStackParamList = {
   AuthOptionsAccess: undefined;
   Login: undefined;
   Register: undefined;
+  AuthSkip: undefined;
 };
 
 export type DrawerParamList = {
@@ -12,6 +13,10 @@ export type DrawerParamList = {
   Invitados: undefined;
   Eventos: undefined;
   QRCode: undefined;
+};
+
+export type MainInvitadoParamList = {
+  Tabs: undefined;
 };
 
 export type ProfileStackParamList = {
@@ -25,9 +30,16 @@ export type RootStackParamList = {
   Loading: undefined;
   Auth: NavigatorScreenParams<AuthStackParamList>;
   Main: NavigatorScreenParams<DrawerParamList>;
+  MainInvitado: NavigatorScreenParams<MainInvitadoParamList>;
   Profile: NavigatorScreenParams<ProfileStackParamList>;
   HomeCrearBoda: undefined;
   CamaraPermiso: undefined;
+  CameraScreen: undefined;
+  HomeMapScreen: undefined;
+  ItinerarioCrear: undefined;
+  ItinerarioSuggestion: undefined;
+  AlbumSuggestion: undefined;
+  RegalosSuggestion: undefined;
 };
 
 export const ROUTES = {
@@ -35,9 +47,16 @@ export const ROUTES = {
     AUTH: "Auth",
     LOADING: "Loading",
     MAIN: "Main",
+    MAIN_INVITADO: "MainInvitado",
     PROFILE: "Profile",
     HOME_CREAR_BODA: "HomeCrearBoda",
-    CamaraPermiso: "CamaraPermiso",
+    CAMARA_PERMISO: "CamaraPermiso",
+    CAMARA_SCREEN: "CameraScreen",
+    HOME_MAP_SCREEN: "HomeMapScreen",
+    ITINERARIO_CREAR: "ItinerarioCrear",
+    ITINERARIO_SUGGESTION: "ItinerarioSuggestion",
+    ALBUM_SUGGESTION: "AlbumSuggestion",
+    REGALOS_SUGGESTION: "RegalosSuggestion",
   },
   AUTH: {
     BOARDING: "Boarding",
