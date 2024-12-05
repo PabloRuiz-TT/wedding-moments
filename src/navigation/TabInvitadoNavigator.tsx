@@ -5,7 +5,8 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BodaService } from "../services/BodaService";
 import { AlbumInvitadoScreen } from "./screens/AlbumInvitadoScreen";
-import { Hoome } from "./screens/HomeInvitadoScreen";
+import ItinerarioInvitadoScreen from "./screens/ItinerarioInvitadoScreen"; // Ajusta la ruta según tu proyecto
+
 
 export const TABS_ROUTES: BaseRoute[] = [
   {
@@ -62,10 +63,13 @@ const HomeInvitadoScreen = () => {
   );
 };
 
-const ItinerarioInvitadoScreen = () => {
+const HomeInvitadoScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Text>Itinerario Invitado</Text>
+      <Text>Home Invitado</Text>
     </SafeAreaView>
   );
 };
+
+
+

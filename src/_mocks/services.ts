@@ -1,19 +1,20 @@
+import { ROUTES } from "../types/navigation.types";
+
 export const servicesImages = [
-  {
-    text: "Fotografía",
-    uri: require("../../assets/illustrations/camera.jpeg"),
-  },
   {
     text: "Itinerario",
     uri: require("../../assets/illustrations/itinerary.jpeg"),
+    path: ROUTES.ROOT.ITINERARIO_SUGGESTION,
   },
   {
     text: "Regalos",
     uri: require("../../assets/illustrations/gitf.jpeg"),
+    path: ROUTES.ROOT.REGALOS_SUGGESTION,
   },
   {
     text: "Álbum",
     uri: require("../../assets/illustrations/flowers.jpeg"),
+    path: ROUTES.ROOT.ALBUM_SUGGESTION,
   },
 ];
 

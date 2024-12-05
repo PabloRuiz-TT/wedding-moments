@@ -26,6 +26,7 @@ import {
 } from "../types/navigation.types";
 import { TabNavigator } from "./TabNavigator";
 import { useAuth } from "../providers/AuthProviders";
+import { QRCodeScreen } from "../screens/qr/QRCodeScreen";
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 const ICON_SIZE = 24;
@@ -230,7 +231,7 @@ export const DrawerNavigator = () => {
 
       <Drawer.Screen
         name={ROUTES.MAIN.QRCode}
-        component={() => <Text>QRCode</Text>}
+        component={QRCodeScreen}
         options={{
           title: "Invitación QR",
           headerRight: () => (

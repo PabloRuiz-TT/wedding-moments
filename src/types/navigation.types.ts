@@ -37,6 +37,9 @@ export type RootStackParamList = {
   CameraScreen: undefined;
   HomeMapScreen: undefined;
   ItinerarioCrear: undefined;
+  ItinerarioSuggestion: undefined;
+  AlbumSuggestion: undefined;
+  RegalosSuggestion: undefined;
 };
 
 export const ROUTES = {
@@ -51,6 +54,9 @@ export const ROUTES = {
     CAMARA_SCREEN: "CameraScreen",
     HOME_MAP_SCREEN: "HomeMapScreen",
     ITINERARIO_CREAR: "ItinerarioCrear",
+    ITINERARIO_SUGGESTION: "ItinerarioSuggestion",
+    ALBUM_SUGGESTION: "AlbumSuggestion",
+    REGALOS_SUGGESTION: "RegalosSuggestion",
   },
   AUTH: {
     BOARDING: "Boarding",
