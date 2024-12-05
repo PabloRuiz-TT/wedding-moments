@@ -34,7 +34,11 @@ import { HomeCrearBodaScreen } from "../screens/main/home/HomeCrearBodaScreen";
 import EventosScreen from "../screens/Eventos/EventosScreen";
 =======
 import { useAuth } from "../providers/AuthProviders";
+<<<<<<< HEAD
 >>>>>>> c5315ee979356fd742ddcc93084ec5d50a110ea0
+=======
+import { QRCodeScreen } from "../screens/qr/QRCodeScreen";
+>>>>>>> fd53e107cbbe868541b7b7ded597b988edf75e69
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 const ICON_SIZE = 24;
@@ -239,7 +243,7 @@ export const DrawerNavigator = () => {
 
       <Drawer.Screen
         name={ROUTES.MAIN.QRCode}
-        component={() => <Text>QRCode</Text>}
+        component={QRCodeScreen}
         options={{
           title: "Invitación QR",
           headerRight: () => (

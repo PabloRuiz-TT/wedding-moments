@@ -205,7 +205,7 @@ export const AuthSkipScreen = () => {
 									password: password,
 									rol: 'invitado',
 								};
-								register(userAnonymous)
+								register(userAnonymous,true)
 									.then(async () => {
 										await AsyncStorage.setItem('code', code);
 										const docRef = await addDoc(collection(db, 'invitados'), {
