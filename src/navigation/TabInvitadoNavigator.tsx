@@ -8,7 +8,6 @@ import { AlbumInvitadoScreen } from "./screens/AlbumInvitadoScreen";
 import ItinerarioInvitadoScreen from "./screens/ItinerarioInvitadoScreen"; // Ajusta la ruta según tu proyecto
 import { Hoome } from "./screens/HomeInvitadoScreen";
 
-
 export const TABS_ROUTES: BaseRoute[] = [
   {
     key: "home",
@@ -35,7 +34,7 @@ export const TabInvitadoNavigator = () => {
   const [index, setIndex] = useState(0);
 
   const renderScene = BottomNavigation.SceneMap({
-    home: () => <HomeInvitadoScreen />,
+    home: () => <Hoome />,
     itinerario: () => <ItinerarioInvitadoScreen />,
     album: () => <AlbumInvitadoScreen />,
   });
@@ -53,17 +52,3 @@ export const TabInvitadoNavigator = () => {
     </>
   );
 };
-
-const bodaService = BodaService.getInstance();
-
-const HomeInvitadoScreen = () => {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Hoome/>,
-    </SafeAreaView>
-  );
-};
-
-
-
-

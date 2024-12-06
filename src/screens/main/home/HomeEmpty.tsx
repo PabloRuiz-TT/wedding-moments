@@ -80,10 +80,7 @@ export const HomeEmpty = () => {
 
         <View style={{ marginTop: 48 }}>
           {servicesImages.map((service, index) => (
-            <TouchableRipple
-              key={index}
-              onPress={() => navigation.navigate(service.path)}
-            >
+            <TouchableRipple key={index}>
               <ImageBackground
                 source={service.uri}
                 style={{

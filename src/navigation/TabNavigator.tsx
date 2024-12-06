@@ -20,13 +20,6 @@ export const TABS_ROUTES: BaseRoute[] = [
     focusedIcon: "map",
     unfocusedIcon: "map-outline",
   },
-
-  {
-    key: "album",
-    title: "Álbum",
-    focusedIcon: "image",
-    unfocusedIcon: "image-outline",
-  },
 ] as const;
 
 export const TabNavigator = () => {
@@ -35,7 +28,6 @@ export const TabNavigator = () => {
   const renderScene = BottomNavigation.SceneMap({
     home: () => <HomeScreen />,
     itinerario: () => <ItinerarioScreen />,
-    album: () => <AlbumScreen />,
   });
 
   return (

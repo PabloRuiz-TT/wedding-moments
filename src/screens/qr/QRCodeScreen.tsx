@@ -68,14 +68,7 @@ export const QRCodeScreen = () => {
         <Card.Content>
           <Title style={styles.title}>Código QR de tu Boda</Title>
           <View style={styles.qrContainer}>
-            <QRCode
-              value={JSON.stringify({
-                bodaId: boda.id,
-                nombreNovios: `${boda.nombreNovio} & ${boda.nombreNovia}`,
-                fecha: boda.fecha,
-              })}
-              size={250}
-            />
+            <QRCode value={JSON.stringify(boda)} size={250} />
           </View>
           <Paragraph style={styles.paragraph}>
             Comparte este código QR con tus invitados para que puedan acceder a

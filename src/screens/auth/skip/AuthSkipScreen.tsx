@@ -32,9 +32,9 @@ export const AuthSkipScreen = () => {
 
   // Estados para manejar los campos del formulario
   const [code, setCode] = useState<string>("");
-  const [email, setEmail] = useState<string>("anoy@email.com");
-  const [fullName, setFullName] = useState<string>("Pablo Anonimo");
-  const [password, setPassword] = useState<string>("12345678910");
+  const [email, setEmail] = useState<string>("");
+  const [fullName, setFullName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [weddingFound, setWeddingFound] = useState<boolean>(false);
   const { register } = useAuthStore();
 
@@ -90,7 +90,9 @@ export const AuthSkipScreen = () => {
                 }}
                 facing="back"
                 onBarcodeScanned={({ data }) => {
-                  console.log(data);
+                  if (data) {
+                    Alert.alert(JSON.stringify(data));
+                  }
                 }}
               />
             </MotiView>

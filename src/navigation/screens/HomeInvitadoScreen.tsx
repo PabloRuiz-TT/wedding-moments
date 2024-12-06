@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
-import { Appbar, Text, Menu, Divider, Button, Card, IconButton } from "react-native-paper";
+import {
+  Appbar,
+  Text,
+  Menu,
+  Divider,
+  Button,
+  Card,
+  IconButton,
+} from "react-native-paper";
 import { Boda, BodaService } from "../../services/BodaService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoadingScreen } from "../../screens/loading/LoadingScreen";
@@ -111,16 +119,16 @@ export const Hoome = () => {
                     <MapView
                       style={styles.map}
                       initialRegion={{
-                        latitude: parseFloat(boda.latitude),
-                        longitude: parseFloat(boda.longitude),
+                        latitude: Number(boda.latitude),
+                        longitude: Number(boda.longitude),
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421,
                       }}
                     >
                       <Marker
                         coordinate={{
-                          latitude: parseFloat(boda.latitude),
-                          longitude: parseFloat(boda.longitude),
+                          latitude: Number(boda.latitude),
+                          longitude: Number(boda.longitude),
                         }}
                         title="Ubicación de la Boda"
                         description="Aquí se celebra la boda"
@@ -130,7 +138,11 @@ export const Hoome = () => {
                 )}
               </Card.Content>
               <Card.Actions style={styles.cardActions}>
-                <Button mode="contained" onPress={() => {}} style={styles.actionButton}>
+                <Button
+                  mode="contained"
+                  onPress={() => {}}
+                  style={styles.actionButton}
+                >
                   Ver Detalles
                 </Button>
                 <IconButton
@@ -144,7 +156,9 @@ export const Hoome = () => {
               </Card.Actions>
             </Card>
           ) : (
-            <Text style={styles.errorText}>No se encontró información de la boda.</Text>
+            <Text style={styles.errorText}>
+              No se encontró información de la boda.
+            </Text>
           )}
         </ScrollView>
       </SafeAreaView>

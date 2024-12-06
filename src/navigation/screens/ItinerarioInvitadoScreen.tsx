@@ -44,20 +44,17 @@ const ItinerarioInvitadoScreen = () => {
 
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.timelineItem}>
-      
       <View style={styles.timeContainer}>
         <Text style={styles.timeText}>
           {`${item.hora}:${item.minuto.toString().padStart(2, "0")}`}
         </Text>
       </View>
 
-      
       <View style={styles.lineContainer}>
         <View style={styles.circle} />
         <View style={styles.line} />
       </View>
 
-      
       <Card style={styles.card}>
         <Card.Content>
           <Text style={styles.title}>{item.titulo}</Text>
@@ -86,7 +83,6 @@ const ItinerarioInvitadoScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeContainer}>
-      
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Itinerario</Text>
         <View style={styles.titleUnderline} />
