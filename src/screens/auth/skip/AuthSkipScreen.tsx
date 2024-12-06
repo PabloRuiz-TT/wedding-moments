@@ -205,15 +205,21 @@ export const AuthSkipScreen = () => {
                 }
               } else {
                 const userAnonymous = {
-                  email,
-                  fullName,
-                  password,
+                  nombre: fullName.split(" ")[0],
+                  apellido: fullName.split(" ")[1] || "",
+                  email: email,
+                  telefono: "",
+                  password: password,
                   rol: "invitado",
                 };
-
                 register(userAnonymous, true)
                   .then(async () => {
                     await AsyncStorage.setItem("code", code);
+                    const docRef = await addDoc(collection(db, "invitados"), {
+                      nombreInvitado: fullName,
+                      email: email,
+                      codigoAmigo: code,
+                    });
                   })
                   .catch((error) => {
                     console.log(error);
